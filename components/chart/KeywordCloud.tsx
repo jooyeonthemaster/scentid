@@ -14,17 +14,17 @@ const KeywordCloud: React.FC<KeywordCloudProps> = ({
   title = '키워드',
   showAnimation = true
 }) => {
-  // 고정된 색상 배열
+  // 메탈 실버 색상 배열
   const colors = [
-    '#FF9EB5', // 핑크
-    '#FF6B8B', // 짙은 핑크
-    '#A5D8F3', // 하늘색
-    '#9B8EE8', // 보라색
-    '#FFD166', // 노란색
-    '#67C23A', // 초록색
-    '#E67E22', // 주황색
-    '#16A085', // 청록색
-    '#8E44AD'  // 자주색
+    '#6B7280', // 그레이
+    '#4B5563', // 다크 그레이
+    '#9CA3AF', // 라이트 그레이
+    '#374151', // 딥 그레이
+    '#6B7280', // 그레이 (반복)
+    '#8B8B8B', // 실버
+    '#5B5B5B', // 차콜
+    '#707070', // 미드 그레이
+    '#555555'  // 다크 실버
   ];
   
   // 키워드 가중치 설정 (이 예제에서는 랜덤하게 가중치 할당)
@@ -48,7 +48,7 @@ const KeywordCloud: React.FC<KeywordCloudProps> = ({
       };
     });
   };
-  
+
   const weightedKeywords = getWeightedKeywords();
   
   // 가중치에 따른 폰트 크기 계산
@@ -106,9 +106,13 @@ const KeywordCloud: React.FC<KeywordCloudProps> = ({
         animate: { opacity: 1 },
         transition: { duration: 0.5 }
       } : {})}
-      className="flex flex-col items-center my-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl border border-purple-200 w-full"
+      className="flex flex-col items-center my-4 bg-gradient-to-br from-gray-50 to-slate-100 rounded-xl border border-gray-200 w-full"
+      style={{ 
+        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+      }}
     >
-      <div className="relative w-full h-30 bg-white rounded-lg p-6 shadow-sm">
+      <div className="relative w-full h-30 bg-white rounded-lg p-6 shadow-sm border border-gray-200">
         {weightedKeywords.map((keyword, index) => {
           const position = getRandomPosition(index, weightedKeywords.length);
           
@@ -130,11 +134,11 @@ const KeywordCloud: React.FC<KeywordCloudProps> = ({
                 style={{ 
                   fontSize: getFontSize(keyword.weight),
                   color: keyword.color,
-                  backgroundColor: `${keyword.color}20`, // 20% 투명도
-                  borderColor: `${keyword.color}40`, // 40% 투명도
+                  backgroundColor: `${keyword.color}15`, // 15% 투명도
+                  borderColor: `${keyword.color}30`, // 30% 투명도
                   borderWidth: '1px',
                   borderStyle: 'solid',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
                 }}
               >
                 {keyword.text}

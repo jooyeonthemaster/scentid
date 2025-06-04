@@ -45,14 +45,14 @@ const ScentRadarChart: React.FC<ScentRadarChartProps> = ({
     spicy: '스파이시'
   };
   
-  // 카테고리 색상 매핑
+  // 카테고리 색상 매핑 (실버 계열)
   const categoryColors: Record<keyof ScentCategoryScores, string> = {
-    citrus: '#F9D423', // 노란색
-    floral: '#FF4E50', // 분홍색
-    woody: '#8A5A44', // 갈색
-    musky: '#736CED', // 보라색
-    fruity: '#FC913A', // 오렌지색
-    spicy: '#C04848'  // 붉은색
+    citrus: '#9CA3AF', // 라이트 그레이
+    floral: '#6B7280', // 그레이
+    woody: '#4B5563', // 다크 그레이
+    musky: '#374151', // 딥 그레이
+    fruity: '#8B8B8B', // 실버
+    spicy: '#555555'  // 다크 실버
   };
   
   // 가장 높은 값을 가진 카테고리 찾기
@@ -69,15 +69,17 @@ const ScentRadarChart: React.FC<ScentRadarChartProps> = ({
       {
         label: '향 강도',
         data: Object.values(categories),
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1,
+        backgroundColor: 'rgba(107, 114, 128, 0.2)', // 그레이 투명
+        borderColor: 'rgba(107, 114, 128, 1)', // 그레이
+        borderWidth: 2,
         pointBackgroundColor: Object.keys(categories).map(key => 
           categoryColors[key as keyof ScentCategoryScores]
         ),
         pointBorderColor: '#fff',
         pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
+        pointHoverBorderColor: 'rgba(107, 114, 128, 1)',
+        pointRadius: 5,
+        pointHoverRadius: 7
       },
     ],
   };
@@ -88,12 +90,24 @@ const ScentRadarChart: React.FC<ScentRadarChartProps> = ({
       r: {
         angleLines: {
           display: true,
+          color: '#D1D5DB' // 라이트 그레이
+        },
+        grid: {
+          color: '#E5E7EB' // 더 연한 그레이
+        },
+        pointLabels: {
+          color: '#374151', // 딥 그레이
+          font: {
+            size: 12,
+            weight: 'bold' as const
+          }
+        },
+        ticks: {
+          color: '#6B7280', // 그레이
+          backdropColor: 'rgba(255, 255, 255, 0.8)'
         },
         suggestedMin: 0,
-        suggestedMax: 10,
-        ticks: {
-          stepSize: 2
-        }
+        suggestedMax: 10
       },
     },
     plugins: {
@@ -112,18 +126,22 @@ const ScentRadarChart: React.FC<ScentRadarChartProps> = ({
         animate: { opacity: 1, y: 0 },
         transition: { duration: 0.6 }
       } : {})}
-      className="flex flex-col items-center p-4 bg-white rounded-xl border border-gray-200 shadow-sm"
+      className="flex flex-col items-center p-4 bg-gradient-to-br from-gray-50 to-slate-100 rounded-xl border border-gray-200 shadow-sm"
+      style={{ 
+        background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+      }}
     >
-      <h3 className="text-lg font-bold mb-4">{title}</h3>
+      <h3 className="text-lg font-bold mb-4 text-gray-800">{title}</h3>
       
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md bg-white rounded-lg p-4 shadow-sm border border-gray-200">
         <Radar data={data} options={options} />
       </div>
       
       {/* 주요 향 카테고리 표시 */}
-      <div className="mt-4 bg-gray-50 p-3 rounded-lg text-center">
-        <p className="text-sm text-gray-600">주요 향 카테고리</p>
-        <p className="font-medium text-lg" style={{ color: categoryColors[maxCategory.key as keyof ScentCategoryScores] || '#333' }}>
+      <div className="mt-4 bg-gradient-to-r from-gray-100 to-gray-200 p-3 rounded-lg text-center border border-gray-300">
+        <p className="text-sm text-gray-700">주요 향 카테고리</p>
+        <p className="font-medium text-lg" style={{ color: categoryColors[maxCategory.key as keyof ScentCategoryScores] || '#374151' }}>
           {categoryNames[maxCategory.key as keyof ScentCategoryScores] || maxCategory.key} ({maxCategory.value}/10)
         </p>
       </div>
@@ -140,7 +158,7 @@ const ScentRadarChart: React.FC<ScentRadarChartProps> = ({
               className="w-3 h-3 rounded-full"
               style={{ backgroundColor: categoryColors[key as keyof ScentCategoryScores] || '#ddd' }}
             />
-            <span className="font-medium">
+            <span className="font-medium text-gray-800">
               {categoryNames[key as keyof ScentCategoryScores]}: {value}
             </span>
           </div>

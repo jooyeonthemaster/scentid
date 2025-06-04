@@ -1,6 +1,6 @@
 import React from 'react';
-import IdolInfoForm from '@/components/info/IdolInfoForm';
+import PersonalInfoForm from '@/components/info/PersonalInfoForm';
 
 export default function InfoPage() {
-  return <IdolInfoForm />;
+  return <PersonalInfoForm />;
 }

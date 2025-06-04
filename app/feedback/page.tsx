@@ -118,26 +118,26 @@ export default function FeedbackPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-amber-50 flex items-center justify-center flex-col p-4">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-slate-200 flex items-center justify-center flex-col p-4">
         <div className="flex justify-center items-center mb-4">
-          <div className="animate-bounce bg-yellow-400 rounded-full h-4 w-4 mr-1"></div>
-          <div className="animate-bounce bg-yellow-300 rounded-full h-4 w-4 mr-1" style={{ animationDelay: '0.2s' }}></div>
-          <div className="animate-bounce bg-yellow-200 rounded-full h-4 w-4" style={{ animationDelay: '0.4s' }}></div>
+          <div className="animate-bounce bg-gray-400 rounded-full h-4 w-4 mr-1"></div>
+          <div className="animate-bounce bg-gray-500 rounded-full h-4 w-4 mr-1" style={{ animationDelay: '0.2s' }}></div>
+          <div className="animate-bounce bg-gray-600 rounded-full h-4 w-4" style={{ animationDelay: '0.4s' }}></div>
         </div>
-        <p className="text-yellow-800 font-medium">향수 정보를 불러오는 중...</p>
+        <p className="text-gray-800 font-medium">향수 정보를 불러오는 중...</p>
       </div>
     );
   }
 
   if (error || !perfume) {
     return (
-      <div className="min-h-screen bg-amber-50 flex items-center justify-center flex-col p-4">
-        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-slate-200 flex items-center justify-center flex-col p-4">
+        <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md border border-gray-200">
           <h2 className="text-xl font-bold text-red-500 mb-4">오류 발생</h2>
           <p className="text-gray-700 mb-6">{error || '향수 정보를 불러올 수 없습니다. 다시 시도해주세요.'}</p>
           <button
             onClick={() => router.push('/result')}
-            className="w-full bg-yellow-400 text-gray-800 font-bold py-3 px-6 rounded-full shadow-md hover:bg-yellow-500 transition-colors"
+            className="w-full bg-gradient-to-r from-gray-800 to-black text-white font-bold py-3 px-6 rounded-full shadow-md hover:from-gray-700 hover:to-gray-900 transition-all duration-200"
           >
             결과 페이지로 돌아가기
           </button>
@@ -147,7 +147,7 @@ export default function FeedbackPage() {
   }
 
   return (
-    <div className="min-h-screen bg-amber-50 py-8 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-slate-200 py-8 px-4">
       <div className="max-w-7xl mx-auto">
         {/* 모바일용 레시피 히스토리 버튼 (상단) */}
         <div className="lg:hidden mb-6">
@@ -160,7 +160,7 @@ export default function FeedbackPage() {
             <div className="mb-4">
               <button
                 onClick={() => setShowRecipeHistory(!showRecipeHistory)}
-                className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-lg shadow-sm border hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
               >
                 <span className="font-medium text-gray-700">
                   📚 이전 레시피 보기
@@ -192,9 +192,9 @@ export default function FeedbackPage() {
 
             {/* 모바일용 도움말 카드 */}
             {!showRecipeHistory && (
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200 mb-4">
-                <h4 className="font-medium text-blue-900 mb-2">💡 팁</h4>
-                <p className="text-sm text-blue-800">
+              <div className="bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg p-4 border border-gray-300 mb-4">
+                <h4 className="font-medium text-gray-900 mb-2">💡 팁</h4>
+                <p className="text-sm text-gray-800">
                   이전에 생성된 레시피들을 다시 확인하고 비교할 수 있습니다. 
                   마음에 들었던 이전 레시피가 있다면 다시 활성화해보세요!
                 </p>
@@ -210,38 +210,34 @@ export default function FeedbackPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 0.95 }}
               transition={{ duration: 0.6 }}
-              className="relative bg-white rounded-3xl border-4 border-dashed border-gray-300 p-6 shadow-lg"
+              className="relative bg-white rounded-3xl p-6 shadow-lg border border-gray-200"
+              style={{ 
+                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
+                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+              }}
             >
               {/* 왼쪽 위 점 장식 */}
-              <div className="absolute -left-3 top-20 w-6 h-6 bg-amber-50 border-4 border-amber-400 rounded-full"></div>
+              <div className="absolute -left-3 top-20 w-6 h-6 bg-gray-100 border-4 border-gray-400 rounded-full"></div>
               
-              {/* 오른쪽 아래 캐릭터 */}
+              {/* 오른쪽 아래 캐릭터 - 다이아몬드 이모지로 변경 */}
               <motion.div 
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.8, type: "spring" }}
                 className="absolute -right-4 bottom-32 w-24 h-24"
               >
-                <div className="relative w-full h-full flex items-center justify-center">
-                  <img 
-                    src="/cute.png" 
-                    alt="Cute Character" 
-                    className="w-full h-full object-contain"
-                    style={{ 
-                      filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                      transform: 'scaleX(-1)'
-                    }}
-                  />
+                <div className="relative w-full h-full flex items-center justify-center text-6xl">
+                  💎
                 </div>
               </motion.div>
               
               {/* 왼쪽 하단 장식 */}
-              <div className="absolute -left-3 bottom-28 w-6 h-6 bg-amber-50 border-4 border-amber-400 rounded-full"></div>
+              <div className="absolute -left-3 bottom-28 w-6 h-6 bg-gray-100 border-4 border-gray-400 rounded-full"></div>
               
               {/* 헤더 영역 */}
               <div className="text-center mb-6 pt-4">
                 <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                  <span className="bg-yellow-300 px-2 py-1">향수 피드백</span>
+                  <span className="bg-gradient-to-r from-gray-700 to-black text-white px-3 py-2 rounded-lg">향수 피드백</span>
                 </h1>
                 <p className="text-gray-600 text-sm">
                   추천된 향수에 대한 피드백을 입력해주세요.
@@ -249,11 +245,11 @@ export default function FeedbackPage() {
                 
                 {/* 현재 활성화된 레시피 표시 */}
                 {currentRecipe && (
-                  <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                    <p className="text-sm text-green-800">
+                  <div className="mt-4 p-3 bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 rounded-lg">
+                    <p className="text-sm text-gray-800">
                       🎯 <strong>활성화된 레시피:</strong> {currentRecipe.originalPerfumeName || '이전 레시피'}
                     </p>
-                    <p className="text-xs text-green-600 mt-1">
+                    <p className="text-xs text-gray-600 mt-1">
                       {currentRecipe.testingRecipe?.granules?.length || 0}개 향료 조합
                     </p>
                   </div>
@@ -283,7 +279,7 @@ export default function FeedbackPage() {
               <div className="mb-4">
                 <button
                   onClick={() => setShowRecipeHistory(!showRecipeHistory)}
-                  className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-lg shadow-sm border hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 bg-white rounded-lg shadow-sm border border-gray-200 hover:bg-gray-50 transition-colors"
                 >
                   <span className="font-medium text-gray-700">
                     📚 이전 레시피 보기
@@ -315,9 +311,9 @@ export default function FeedbackPage() {
 
               {/* 도움말 카드 */}
               {!showRecipeHistory && (
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <h4 className="font-medium text-blue-900 mb-2">💡 팁</h4>
-                  <p className="text-sm text-blue-800">
+                <div className="bg-gradient-to-r from-gray-100 to-gray-200 rounded-lg p-4 border border-gray-300">
+                  <h4 className="font-medium text-gray-900 mb-2">💡 팁</h4>
+                  <p className="text-sm text-gray-800">
                     이전에 생성된 레시피들을 다시 확인하고 비교할 수 있습니다. 
                     마음에 들었던 이전 레시피가 있다면 다시 활성화해보세요!
                   </p>

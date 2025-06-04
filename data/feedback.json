@@ -2731,5 +2731,35 @@
     "submittedAt": "2025-05-31T18:50:07.473Z",
     "id": "feedback_1748717407573_24tuqua",
     "timestamp": "2025-05-31T18:50:07.573Z"
+  },
+  {
+    "perfumeId": "YJ-8213431",
+    "retentionPercentage": 60,
+    "categoryPreferences": {
+      "citrus": "increase",
+      "floral": "decrease",
+      "woody": "maintain",
+      "musky": "maintain",
+      "fruity": "maintain",
+      "spicy": "maintain"
+    },
+    "userCharacteristics": {
+      "weight": "medium",
+      "sweetness": "medium",
+      "freshness": "medium",
+      "uniqueness": "medium"
+    },
+    "specificScents": [
+      {
+        "id": "MD-8602341",
+        "name": "만다린 오렌지",
+        "ratio": 50,
+        "action": "add"
+      }
+    ],
+    "notes": "",
+    "submittedAt": "2025-06-04T01:50:45.536Z",
+    "id": "feedback_1749001846546_006ydpv",
+    "timestamp": "2025-06-04T01:50:46.546Z"
   }
 ]

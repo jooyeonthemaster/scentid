@@ -63,12 +63,12 @@ export default function PersonalInfoForm() {
   // 입력값 변경 핸들러
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setIdolInfo(prev => ({ ...prev, [name]: value }));
+    setPersonalInfo(prev => ({ ...prev, [name]: value }));
   };
 
   // 체크박스 변경 핸들러
   const handleCheckboxChange = (category: 'style' | 'personality', id: string) => {
-    setIdolInfo(prev => {
+    setPersonalInfo(prev => {
       const current = prev[category];
       
       // 이미 선택된 항목인 경우 제거, 아니면 추가
@@ -82,7 +82,7 @@ export default function PersonalInfoForm() {
 
   // 이미지 업로드 핸들러
   const handleImageUpload = (file: File) => {
-    setIdolInfo(prev => ({ ...prev, image: file }));
+    setPersonalInfo(prev => ({ ...prev, image: file }));
     
     // 이미지 크기 확인 및 경고
     if (file.size > 2 * 1024 * 1024) { // 2MB 초과
@@ -162,39 +162,39 @@ export default function PersonalInfoForm() {
   // 다음 단계로 진행
   const handleNext = () => {
     if (step === 1) {
-      if (!idolInfo.userPhone) {
+      if (!personalInfo.userPhone) {
         alert('비밀번호를 입력해주세요.');
         return;
       }
-      if (!idolInfo.name) {
-        alert('최애의 이름을 입력해주세요.');
+      if (!personalInfo.name) {
+        alert('이름을 입력해주세요.');
         return;
       }
-      if (!idolInfo.gender) {
+      if (!personalInfo.gender) {
         alert('성별을 선택해주세요.');
         return;
       }
       // 비밀번호 형식 검증 (4자리 숫자만 허용)
       const passwordRegex = /^[0-9]{4}$/;
-      if (!passwordRegex.test(idolInfo.userPhone)) {
+      if (!passwordRegex.test(personalInfo.userPhone)) {
         alert('비밀번호는 4자리 숫자만 입력 가능합니다.');
         return;
       }
     }
     
-    if (step === 2 && idolInfo.style.length === 0) {
+    if (step === 2 && personalInfo.style.length === 0) {
       alert('최소 하나 이상의 스타일을 선택해주세요.');
       return;
     }
     
-    if (step === 3 && idolInfo.personality.length === 0) {
+    if (step === 3 && personalInfo.personality.length === 0) {
       alert('최소 하나 이상의 성격을 선택해주세요.');
       return;
     }
     
     if (step === 5) {
       // 이미지 유효성 검사
-      if (!idolInfo.image) {
+      if (!personalInfo.image) {
         alert('이미지를 업로드해주세요.');
         return;
       }
@@ -213,36 +213,36 @@ export default function PersonalInfoForm() {
       const formData = new FormData();
       
       // 사용자 및 세션 정보 추가 (Firebase 저장을 위해)
-      const userId = idolInfo.userPhone.replace(/-/g, ''); // 하이픈 제거해서 userId로 사용
+      const userId = personalInfo.userPhone.replace(/-/g, ''); // 하이픈 제거해서 userId로 사용
       const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
       formData.append('userId', userId);
       formData.append('sessionId', sessionId);
       
-      formData.append('idolName', idolInfo.name);
-      formData.append('idolGender', idolInfo.gender);
+      formData.append('idolName', personalInfo.name);
+      formData.append('idolGender', personalInfo.gender);
       
       // 배열 데이터는 여러 개의 동일한 이름으로 추가
-      idolInfo.style.forEach(style => {
+      personalInfo.style.forEach(style => {
         formData.append('idolStyle', style);
       });
       
-      idolInfo.personality.forEach(personality => {
+      personalInfo.personality.forEach(personality => {
         formData.append('idolPersonality', personality);
       });
       
-      formData.append('idolCharms', idolInfo.charms);
+      formData.append('idolCharms', personalInfo.charms);
       
       // 이미지 압축 후 추가
-      if (idolInfo.image) {
+      if (personalInfo.image) {
         try {
-          const compressedImage = await compressImage(idolInfo.image, 1); // 1MB로 압축
+          const compressedImage = await compressImage(personalInfo.image, 1); // 1MB로 압축
           formData.append('image', compressedImage);
           console.log(`이미지 압축 완료: ${Math.round(compressedImage.size / 1024)}KB`);
         } catch (compressionError) {
           console.error('이미지 압축 오류:', compressionError);
           // 압축 실패 시 원본 이미지 사용
-        formData.append('image', idolInfo.image);
-          console.log(`원본 이미지 사용: ${Math.round(idolInfo.image.size / 1024)}KB`);
+        formData.append('image', personalInfo.image);
+          console.log(`원본 이미지 사용: ${Math.round(personalInfo.image.size / 1024)}KB`);
         }
       }
       
@@ -276,14 +276,14 @@ export default function PersonalInfoForm() {
       // 추가 디버깅 로그
       console.log('API 요청 경로:', '/api/analyze');
       console.log('FormData 내용:', {
-        userPhone: idolInfo.userPhone,
+        userPhone: personalInfo.userPhone,
         userId: userId,
         sessionId: sessionId,
-        idolName: idolInfo.name,
-        idolStyle: idolInfo.style,
-        idolPersonality: idolInfo.personality,
-        idolCharms: idolInfo.charms,
-        imageSize: idolInfo.image ? `${Math.round(idolInfo.image.size / 1024)}KB` : 'No image'
+        idolName: personalInfo.name,
+        idolStyle: personalInfo.style,
+        idolPersonality: personalInfo.personality,
+        idolCharms: personalInfo.charms,
+        imageSize: personalInfo.image ? `${Math.round(personalInfo.image.size / 1024)}KB` : 'No image'
       });
 
       try {
@@ -350,13 +350,13 @@ export default function PersonalInfoForm() {
         
         // 아이돌 정보 저장 (이미지는 별도 처리)
         localStorage.setItem('idolInfo', JSON.stringify({
-          ...idolInfo,
+          ...personalInfo,
           // File 객체는 직렬화되지 않으므로 image 속성은 제외
           image: undefined
         }));
         
         // 이미지가 있다면 별도로 처리
-        if (idolInfo.image && imagePreview) {
+        if (personalInfo.image && imagePreview) {
           localStorage.setItem('idolImagePreview', imagePreview);
         }
         
@@ -394,22 +394,28 @@ export default function PersonalInfoForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-amber-50 p-0 overflow-x-hidden">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-slate-200 p-0 overflow-x-hidden">
       {/* 큰 카드 컨테이너 - 380픽셀로 고정 */}
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 0.95 }}
         transition={{ duration: 0.6 }}
-        className="relative w-[380px] h-auto bg-white rounded-3xl border-4 border-dashed border-gray-300 p-6 pt-10 pb-12 shadow-lg"
-        style={{ maxHeight: '100vh', overflowY: 'auto', overflowX: 'hidden' }}
+        className="relative w-[380px] h-auto bg-white rounded-3xl border border-gray-200 shadow-2xl backdrop-blur-lg p-6 pt-10 pb-12"
+        style={{ 
+          maxHeight: '100vh', 
+          overflowY: 'auto', 
+          overflowX: 'hidden',
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)'
+        }}
       >
         {/* 상단 인스타그램 아이디 */}
-        <div className="absolute top-6 right-6 text-gray-700 font-semibold">
+        <div className="absolute top-6 right-6 text-gray-600 font-medium text-sm tracking-wide">
           @acscent_id
         </div>
         
-        {/* 왼쪽 위 점 장식 */}
-        <div className="absolute -left-3 top-20 w-6 h-6 bg-amber-50 border-4 border-amber-400 rounded-full"></div>
+        {/* 왼쪽 위 점 장식 - 실버 */}
+        <div className="absolute -left-3 top-20 w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-400 border-4 border-white rounded-full shadow-lg"></div>
         
         {/* 오른쪽 상단 캐릭터 */}
         <motion.div 
@@ -419,14 +425,9 @@ export default function PersonalInfoForm() {
           className="absolute -right-10 top-6 w-20 h-20"
         >
           <div className="relative w-full h-full flex items-center justify-center">
-            <img 
-              src="/cute2.png" 
-              alt="Cute Character 2" 
-              className="w-full h-full object-contain"
-              style={{ 
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-              }}
-            />
+            <div className="w-16 h-16 bg-gradient-to-br from-gray-800 to-black rounded-full flex items-center justify-center shadow-2xl">
+              <div className="text-white text-2xl">✨</div>
+            </div>
           </div>
         </motion.div>
         
@@ -438,19 +439,14 @@ export default function PersonalInfoForm() {
           className="absolute -left-10 bottom-10 w-20 h-20"
         >
           <div className="relative w-full h-full flex items-center justify-center">
-            <img 
-              src="/cute.png" 
-              alt="Cute Character" 
-              className="w-full h-full object-contain"
-              style={{ 
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-              }}
-            />
+            <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center shadow-2xl">
+              <div className="text-white text-2xl">🎭</div>
+            </div>
           </div>
         </motion.div>
         
-        {/* 왼쪽 하단 장식 */}
-        <div className="absolute -left-3 bottom-28 w-6 h-6 bg-amber-50 border-4 border-amber-400 rounded-full"></div>
+        {/* 왼쪽 하단 장식 - 실버 */}
+        <div className="absolute -left-3 bottom-28 w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-400 border-4 border-white rounded-full shadow-lg"></div>
         
         {/* 상단 로고 및 제목 영역 */}
         <motion.div
@@ -465,14 +461,14 @@ export default function PersonalInfoForm() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="text-center"
           >
-            <h2 className="text-xs font-bold text-gray-700 mb-1 tracking-wider">AC'SCENT IDENTITY</h2>
+            <h2 className="text-xs font-bold text-gray-500 mb-1 tracking-widest uppercase">AC'SCENT IDENTITY</h2>
             <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">
-              <span className="bg-yellow-300 px-1 py-1 inline-block">
-                {step === 1 && '최애 기본 정보'}
-                {step === 2 && '최애 스타일'}
-                {step === 3 && '최애 성격'}
-                {step === 4 && '최애 매력 포인트'}
-                {step === 5 && '최애 이미지'}
+              <span className="bg-gradient-to-r from-gray-800 to-black bg-clip-text text-transparent px-1 py-1 inline-block">
+                {step === 1 && '개인 정보'}
+                {step === 2 && '스타일 취향'}
+                {step === 3 && '성격 특성'}
+                {step === 4 && '개성 표현'}
+                {step === 5 && '이미지 분석'}
               </span>
             </h1>
           </motion.div>
@@ -481,21 +477,21 @@ export default function PersonalInfoForm() {
             initial={{ y: -5, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            className="text-gray-700 text-base text-center mt-1"
+            className="text-gray-600 text-base text-center mt-1 font-medium"
           >
-            최애에 대한 정보를 입력해주세요 ({step}/5)
+            당신만의 향을 찾기 위한 여정 ({step}/5)
           </motion.p>
           
-          {/* 진행 상태 바 */}
-          <div className="w-full bg-gray-200 rounded-full h-2.5 mt-4">
+          {/* 진행 상태 바 - 그라데이션 */}
+          <div className="w-full bg-gray-200 rounded-full h-3 mt-4 shadow-inner">
             <div 
-              className="bg-yellow-400 h-2.5 rounded-full" 
+              className="bg-gradient-to-r from-gray-700 to-black h-3 rounded-full transition-all duration-500 ease-out shadow-sm" 
               style={{ width: `${step * 20}%` }}
             ></div>
           </div>
         </motion.div>
         
-        {/* 단계 1: 기본 정보 */}
+        {/* 단계별 폼 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
@@ -503,51 +499,51 @@ export default function PersonalInfoForm() {
           className="mt-3 mb-5"
         >
           {step === 1 && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <label htmlFor="userPhone" className="block text-sm font-medium text-gray-700 mb-1">
-                  비밀번호 (4자리) <span className="text-red-500">*</span>
+                <label htmlFor="userPhone" className="block text-sm font-semibold text-gray-700 mb-2">
+                  개인 비밀번호 (4자리) <span className="text-gray-900">*</span>
                 </label>
                 <input
                   type="password"
                   id="userPhone"
                   name="userPhone"
-                  value={idolInfo.userPhone}
+                  value={personalInfo.userPhone}
                   onChange={handleInputChange}
                   placeholder="4자리 숫자를 입력하세요"
                   maxLength={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-300 text-gray-900 placeholder-gray-500"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-gray-600 focus:ring-2 focus:ring-gray-100 text-gray-900 placeholder-gray-400 bg-gray-50 transition-all duration-200"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">결과 조회 시 사용되는 비밀번호입니다</p>
+                <p className="text-xs text-gray-500 mt-1">결과 조회 시 사용되는 개인 비밀번호입니다</p>
               </div>
               
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  최애 이름 <span className="text-red-500">*</span>
+                <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                  이름 <span className="text-gray-900">*</span>
                 </label>
                 <input
                   type="text"
                   id="name"
                   name="name"
-                  value={idolInfo.name}
+                  value={personalInfo.name}
                   onChange={handleInputChange}
-                  placeholder="예: 지수, 정국, 윈터..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-300 text-gray-900 placeholder-gray-500"
+                  placeholder="당신의 이름을 입력해주세요"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-gray-600 focus:ring-2 focus:ring-gray-100 text-gray-900 placeholder-gray-400 bg-gray-50 transition-all duration-200"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
-                  성별 <span className="text-red-500">*</span>
+                <label htmlFor="gender" className="block text-sm font-semibold text-gray-700 mb-2">
+                  성별 <span className="text-gray-900">*</span>
                 </label>
                 <select
                   id="gender"
                   name="gender"
-                  value={idolInfo.gender}
+                  value={personalInfo.gender}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-300 text-gray-900"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-gray-600 focus:ring-2 focus:ring-gray-100 text-gray-900 bg-gray-50 transition-all duration-200"
                   required
                 >
                   <option value="">성별을 선택해주세요</option>
@@ -555,34 +551,33 @@ export default function PersonalInfoForm() {
                   <option value="여성">여성</option>
                 </select>
               </div>
-              
             </div>
           )}
           
           {/* 단계 2: 스타일 */}
           {step === 2 && (
             <div>
-              <p className="text-sm text-gray-600 mb-4">
-                최애의 스타일을 선택해주세요. (여러 개 선택 가능)
+              <p className="text-sm text-gray-600 mb-5 font-medium">
+                당신의 스타일 선호도를 선택해주세요. (복수 선택 가능)
               </p>
               <div className="grid grid-cols-2 gap-3">
                 {styleOptions.map((style) => (
                   <label 
                     key={style.id} 
                     className={`
-                      flex items-center p-3 border rounded-md cursor-pointer transition-all
-                      ${idolInfo.style.includes(style.id) 
-                        ? 'border-yellow-500 bg-yellow-50' 
-                        : 'border-gray-200 hover:border-yellow-300'}
+                      flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105
+                      ${personalInfo.style.includes(style.id) 
+                        ? 'border-gray-700 bg-gradient-to-br from-gray-800 to-black text-white shadow-lg' 
+                        : 'border-gray-200 hover:border-gray-400 bg-white text-gray-700 hover:bg-gray-50'}
                     `}
                   >
                     <input
                       type="checkbox"
-                      checked={idolInfo.style.includes(style.id)}
+                      checked={personalInfo.style.includes(style.id)}
                       onChange={() => handleCheckboxChange('style', style.id)}
                       className="sr-only"
                     />
-                    <span className={`${idolInfo.style.includes(style.id) ? 'text-yellow-600' : 'text-gray-700'}`}>
+                    <span className="font-medium text-center w-full">
                       {style.label}
                     </span>
                   </label>
@@ -594,27 +589,27 @@ export default function PersonalInfoForm() {
           {/* 단계 3: 성격 */}
           {step === 3 && (
             <div>
-              <p className="text-sm text-gray-600 mb-4">
-                최애의 성격을 선택해주세요. (여러 개 선택 가능)
+              <p className="text-sm text-gray-600 mb-5 font-medium">
+                당신의 성격 특성을 선택해주세요. (복수 선택 가능)
               </p>
               <div className="grid grid-cols-2 gap-3">
                 {personalityOptions.map((personality) => (
                   <label 
                     key={personality.id} 
                     className={`
-                      flex items-center p-3 border rounded-md cursor-pointer transition-all
-                      ${idolInfo.personality.includes(personality.id) 
-                        ? 'border-yellow-500 bg-yellow-50' 
-                        : 'border-gray-200 hover:border-yellow-300'}
+                      flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105
+                      ${personalInfo.personality.includes(personality.id) 
+                        ? 'border-gray-700 bg-gradient-to-br from-gray-800 to-black text-white shadow-lg' 
+                        : 'border-gray-200 hover:border-gray-400 bg-white text-gray-700 hover:bg-gray-50'}
                     `}
                   >
                     <input
                       type="checkbox"
-                      checked={idolInfo.personality.includes(personality.id)}
+                      checked={personalInfo.personality.includes(personality.id)}
                       onChange={() => handleCheckboxChange('personality', personality.id)}
                       className="sr-only"
                     />
-                    <span className={`${idolInfo.personality.includes(personality.id) ? 'text-yellow-600' : 'text-gray-700'}`}>
+                    <span className="font-medium text-center w-full">
                       {personality.label}
                     </span>
                   </label>
@@ -623,19 +618,19 @@ export default function PersonalInfoForm() {
             </div>
           )}
           
-          {/* 단계 4: 매력 포인트 */}
+          {/* 단계 4: 개성 표현 */}
           {step === 4 && (
             <div>
-              <p className="text-sm text-gray-600 mb-4">
-                최애의 매력 포인트를 자유롭게 작성해주세요.
+              <p className="text-sm text-gray-600 mb-5 font-medium">
+                당신만의 특별한 매력이나 개성을 자유롭게 표현해주세요.
               </p>
               <textarea
                 id="charms"
                 name="charms"
-                value={idolInfo.charms}
+                value={personalInfo.charms}
                 onChange={handleInputChange}
-                placeholder="예: 눈웃음이 예쁘고, 춤을 잘 추며, 팬들을 항상 생각하는 다정한 모습이 매력적이에요."
-                className="w-full h-32 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-300 resize-none"
+                placeholder="예: 은은하면서도 강렬한 인상을 주고 싶어요. 세련되고 독특한 스타일을 추구하며, 다른 사람들과는 차별화된 향을 원해요."
+                className="w-full h-32 px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-gray-600 focus:ring-2 focus:ring-gray-100 resize-none bg-gray-50 text-gray-900 placeholder-gray-400 transition-all duration-200"
               />
             </div>
           )}
@@ -643,11 +638,11 @@ export default function PersonalInfoForm() {
           {/* 단계 5: 이미지 업로드 */}
           {step === 5 && (
             <div>
-              <p className="text-sm text-gray-600 mb-4">
-                최애의 이미지를 업로드해주세요. 향수 추천에 활용됩니다.
+              <p className="text-sm text-gray-600 mb-5 font-medium">
+                당신의 이미지를 업로드해주세요. AI가 분석하여 맞춤 향수를 추천해드립니다.
               </p>
-              <IdolImageUpload 
-                onImageUpload={(file) => {
+              <PersonalImageUpload 
+                onImageUpload={(file: File) => {
                   handleImageUpload(file);
                   const preview = URL.createObjectURL(file);
                   setImagePreview(preview);
@@ -655,7 +650,7 @@ export default function PersonalInfoForm() {
                 previewUrl={imagePreview}
               />
               <p className="mt-3 text-xs text-gray-500 text-center">
-                * 최애가 잘 보이는 사진을 선택하면 더 정확한 추천을 받을 수 있어요!
+                * 고화질 이미지일수록 더 정확한 분석과 추천을 받을 수 있습니다
               </p>
             </div>
           )}
@@ -666,13 +661,13 @@ export default function PersonalInfoForm() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isLoaded ? 1 : 0, y: isLoaded ? 0 : 20 }}
           transition={{ duration: 0.5, delay: 0.7 }}
-          className="flex justify-center space-x-3"
+          className="flex justify-center space-x-4"
         >
           <motion.button
             onClick={handleBack}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            className="bg-white border-2 border-gray-800 text-gray-800 font-bold py-2 px-6 rounded-full shadow-sm flex items-center"
+            className="bg-white border-2 border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-full shadow-md hover:shadow-lg hover:border-gray-400 transition-all duration-200 flex items-center"
             disabled={isSubmitting}
           >
             {step === 1 ? '처음으로' : '이전'}
@@ -682,21 +677,21 @@ export default function PersonalInfoForm() {
             onClick={handleNext}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            className={`bg-white border-2 border-gray-800 text-gray-800 font-bold py-2 px-6 rounded-full shadow-sm flex items-center ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`bg-gradient-to-r from-gray-800 to-black text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:from-gray-700 hover:to-gray-900'}`}
             disabled={isSubmitting}
           >
             {step === 5 ? (
               isSubmitting ? (
                 <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   {analysisStage || '이미지 분석 중...'}
                 </span>
-              ) : '완료'
+              ) : '분석 시작'
             ) : '다음'}
-            {!isSubmitting && <span className="ml-1 text-lg">»</span>}
+            {!isSubmitting && <span className="ml-1 text-lg">→</span>}
           </motion.button>
         </motion.div>
       </motion.div>

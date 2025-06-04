@@ -92,8 +92,12 @@ export default function FeedbackForm({
   const totalSteps = 3;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-amber-50">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-lg max-h-[90vh] overflow-y-auto relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-slate-200">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-lg max-h-[90vh] overflow-y-auto relative border border-gray-200"
+           style={{ 
+             background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
+             boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+           }}>
         {/* 상단 닫기 버튼 */}
         <div className="absolute top-4 right-4 z-10">
           <button
@@ -110,7 +114,7 @@ export default function FeedbackForm({
         {/* 헤더 영역 */}
         <div className="px-2 pt-6 pb-2">
           <div className="flex items-center mb-2">
-            <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center mr-3 text-xl text-white">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-gray-700 to-black flex items-center justify-center mr-3 text-xl text-white">
               ✨
             </div>
             <div>
@@ -120,15 +124,15 @@ export default function FeedbackForm({
           </div>
 
           {/* 추천된 향수 정보 표시 */}
-          <div className="mt-4 mb-4 p-4 bg-amber-50 rounded-xl border border-amber-100">
+          <div className="mt-4 mb-4 p-4 bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl border border-gray-300">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-3 text-xl">
+              <div className="w-12 h-12 bg-gradient-to-r from-gray-200 to-gray-300 rounded-xl flex items-center justify-center mr-3 text-xl">
                 🧪
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-1">맞춤 향수</p>
                 <h3 className="text-base font-medium text-gray-800">{originalPerfume.name}</h3>
-                <p className="text-xs text-orange-600 mt-1">{originalPerfume.id}</p>
+                <p className="text-xs text-gray-600 mt-1">{originalPerfume.id}</p>
               </div>
             </div>
           </div>
@@ -138,7 +142,7 @@ export default function FeedbackForm({
         {!success && (
           <div className="px-2 pb-4">
             <div className="flex justify-between mb-2 items-center">
-              <span className="text-xs font-medium bg-orange-500 text-white py-1 px-2 rounded-full">
+              <span className="text-xs font-medium bg-gradient-to-r from-gray-700 to-black text-white py-1 px-2 rounded-full">
                 단계 {step}/{totalSteps}
               </span>
               <span className="text-xs font-medium text-gray-600">
@@ -147,7 +151,7 @@ export default function FeedbackForm({
             </div>
             <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-orange-500 rounded-full transition-all duration-500 ease-in-out"
+                className="h-full bg-gradient-to-r from-gray-600 to-gray-800 rounded-full transition-all duration-500 ease-in-out"
                 style={{ width: `${(step / totalSteps) * 100}%` }}
               ></div>
             </div>
@@ -242,7 +246,7 @@ export default function FeedbackForm({
                   className={`px-6 py-2.5 rounded-lg text-white transition-colors shadow-md ${
                     loading 
                       ? 'bg-gray-400 cursor-not-allowed' 
-                      : 'bg-orange-500 hover:bg-orange-600'
+                      : 'bg-gradient-to-r from-gray-800 to-black hover:from-gray-700 hover:to-gray-900'
                   }`}
                 >
                   {loading ? (

@@ -162,23 +162,15 @@ export default function AdjustmentPage() {
         {/* 왼쪽 위 점 장식 */}
         <div className="absolute -left-3 top-20 w-6 h-6 bg-amber-50 border-4 border-amber-400 rounded-full"></div>
         
-        {/* 오른쪽 아래 캐릭터 */}
+        {/* 오른쪽 아래 장식적 패턴 */}
         <motion.div 
           initial={{ x: 50, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.8, type: "spring" }}
-          className="absolute -right-4 bottom-32 w-24 h-24"
+          className="absolute -right-6 bottom-32 w-32 h-32 opacity-20"
         >
-          <div className="relative w-full h-full flex items-center justify-center">
-            <img 
-              src="/cute.png" 
-              alt="Cute Character" 
-              className="w-full h-full object-contain"
-              style={{ 
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
-                transform: 'scaleX(-1)'
-              }}
-            />
+          <div className="relative w-full h-full">
+            <div className="w-full h-full bg-gradient-to-tl from-amber-200 via-amber-100 to-transparent rounded-full blur-xl"></div>
           </div>
         </motion.div>
         

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ScentSelector, SelectedScents } from '../components/ScentSelector';
 import { PerfumeCategory, PerfumeFeedback, SpecificScent } from '@/app/types/perfume';
 import { generateAvailableScents } from '../utils/formatters';
@@ -89,32 +90,107 @@ export const Step3View: React.FC<Step3ViewProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* 향료 검색 및 선택 UI */}
-      <div className="bg-white rounded-xl p-5 shadow-sm">
-        <h3 className="font-medium text-gray-800 mb-4 text-center">특정 향료 추가하기 (선택사항)</h3>
+    <div 
+      className="min-h-screen py-8 px-4"
+      style={{ 
+        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%)',
+      }}
+    >
+      {/* 세련된 헤더 섹션 */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="relative mb-8 rounded-2xl overflow-hidden"
+        style={{ 
+          background: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-white/10"></div>
         
-        <ScentSelector
-          availableScents={availableScents}
-          selectedScent={selectedScent}
-          setSelectedScent={setSelectedScent}
-          scentSearchTerm={scentSearchTerm}
-          setScentSearchTerm={setScentSearchTerm}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-          onAddScent={handleAddScent}
-        />
-
-        {/* 선택된 향료 목록 */}
-        {feedback.specificScents?.length ? (
-          <div className="mt-6">
-            <SelectedScents
-              scents={feedback.specificScents}
-              onRemove={handleRemoveScent}
-              onRatioChange={handleScentRatioChange}
-            />
+        <div className="relative px-6 py-6 text-center">
+          <div 
+            className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-4 shadow-lg"
+            style={{ 
+              background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%)',
+              boxShadow: 'inset 0 4px 8px rgba(255, 255, 255, 0.8), 0 15px 30px rgba(0, 0, 0, 0.2)'
+            }}
+          >
+            <span className="text-xl">🧪</span>
           </div>
-        ) : null}
+          
+          <h2 className="text-2xl font-bold text-white mb-2">
+            특정 향료 추가하기
+          </h2>
+          <p className="text-sm text-gray-300">
+            원하는 향료를 추가하여 나만의 향수를 완성하세요
+          </p>
+        </div>
+      </motion.div>
+
+      <div className="space-y-6">
+        {/* 향료 검색 및 선택 UI */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="rounded-xl p-5 shadow-lg border border-gray-300/50"
+          style={{ 
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.8)'
+          }}
+        >
+          <h3 className="font-medium text-gray-800 mb-4 text-center">향료 검색 및 선택</h3>
+          
+          <ScentSelector
+            availableScents={availableScents}
+            selectedScent={selectedScent}
+            setSelectedScent={setSelectedScent}
+            scentSearchTerm={scentSearchTerm}
+            setScentSearchTerm={setScentSearchTerm}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            onAddScent={handleAddScent}
+          />
+
+          {/* 선택된 향료 목록 */}
+          {feedback.specificScents?.length ? (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              transition={{ duration: 0.4 }}
+              className="mt-6"
+            >
+              <SelectedScents
+                scents={feedback.specificScents}
+                onRemove={handleRemoveScent}
+                onRatioChange={handleScentRatioChange}
+              />
+            </motion.div>
+          ) : null}
+        </motion.div>
+
+        {/* 하단 안내 메시지 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="mt-8 text-center"
+        >
+          <div 
+            className="inline-flex items-center px-4 py-2 rounded-2xl shadow-lg border border-gray-300/50"
+            style={{ 
+              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.8)'
+            }}
+          >
+            <span className="text-lg mr-2">💡</span>
+            <p className="text-sm text-gray-700 font-medium">
+              최대 2개의 향료를 선택하여 개성을 더해보세요
+            </p>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -33,16 +33,7 @@ export default function LandingPage() {
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)'
         }}
       >
-        {/* 상단 인스타그램 아이디 */}
-        <div className="absolute top-6 right-6 text-gray-600 font-medium text-sm tracking-wide">
-          @acscent_id
-        </div>
-        
-        {/* 왼쪽 위 점 장식 - 실버 */}
-        <div className="absolute -left-3 top-20 w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-400 border-4 border-white rounded-full shadow-lg"></div>
-        
-        {/* 왼쪽 하단 장식 - 실버 */}
-        <div className="absolute -left-3 bottom-28 w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-400 border-4 border-white rounded-full shadow-lg"></div>
+
         
         {/* 상단 로고 및 제목 영역 */}
         <div className="flex flex-col items-center mb-6">

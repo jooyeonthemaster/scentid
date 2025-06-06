@@ -91,7 +91,7 @@ export const getScentMainCategory = (id: string): string => {
 export const getCategoryColor = (category: string): { bg: string; text: string; progressBg: string; progressFrom: string; progressTo: string; } => {
   switch (category) {
     case '시트러스':
-      return { bg: 'bg-orange-100', text: 'text-orange-700', progressBg: 'bg-orange-200', progressFrom: 'from-orange-300', progressTo: 'to-orange-500' };
+      return { bg: 'bg-yellow-100', text: 'text-yellow-700', progressBg: 'bg-yellow-200', progressFrom: 'from-yellow-300', progressTo: 'to-yellow-500' };
     case '플로럴':
       return { bg: 'bg-purple-100', text: 'text-purple-700', progressBg: 'bg-purple-200', progressFrom: 'from-purple-300', progressTo: 'to-purple-500' };
     case '우디':

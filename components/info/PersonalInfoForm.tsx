@@ -213,8 +213,13 @@ export default function PersonalInfoForm() {
       const formData = new FormData();
       
       // 사용자 및 세션 정보 추가 (Firebase 저장을 위해)
-      const userId = personalInfo.userPhone.replace(/-/g, ''); // 하이픈 제거해서 userId로 사용
+      const userPin = personalInfo.userPhone.replace(/-/g, ''); // 하이픈 제거된 4자리 숫자
+      const userId = `${userPin}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`; // 4자리 + 타임스탬프 + 랜덤문자열
       const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+      
+      // 디버깅을 위한 로그
+      console.log('사용자 ID 생성:', { userPin, userId, sessionId });
+      
       formData.append('userId', userId);
       formData.append('sessionId', sessionId);
       
@@ -409,44 +414,7 @@ export default function PersonalInfoForm() {
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.5)'
         }}
       >
-        {/* 상단 인스타그램 아이디 */}
-        <div className="absolute top-6 right-6 text-gray-600 font-medium text-sm tracking-wide">
-          @acscent_id
-        </div>
-        
-        {/* 왼쪽 위 점 장식 - 실버 */}
-        <div className="absolute -left-3 top-20 w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-400 border-4 border-white rounded-full shadow-lg"></div>
-        
-        {/* 오른쪽 상단 캐릭터 */}
-        <motion.div 
-          initial={{ y: -30, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.5, duration: 0.8, type: "spring" }}
-          className="absolute -right-10 top-6 w-20 h-20"
-        >
-          <div className="relative w-full h-full flex items-center justify-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-gray-800 to-black rounded-full flex items-center justify-center shadow-2xl">
-              <div className="text-white text-2xl">✨</div>
-            </div>
-          </div>
-        </motion.div>
-        
-        {/* 왼쪽 아래 캐릭터 */}
-        <motion.div 
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.8, type: "spring" }}
-          className="absolute -left-10 bottom-10 w-20 h-20"
-        >
-          <div className="relative w-full h-full flex items-center justify-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-gray-600 to-gray-800 rounded-full flex items-center justify-center shadow-2xl">
-              <div className="text-white text-2xl">🎭</div>
-            </div>
-          </div>
-        </motion.div>
-        
-        {/* 왼쪽 하단 장식 - 실버 */}
-        <div className="absolute -left-3 bottom-28 w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-400 border-4 border-white rounded-full shadow-lg"></div>
+
         
         {/* 상단 로고 및 제목 영역 */}
         <motion.div

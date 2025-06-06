@@ -125,8 +125,8 @@ const SimpleRadarChart: React.FC<SimpleRadarChartProps> = ({
       {/* 데이터 다각형 */}
       <path
         d={createPath()}
-        fill="rgba(255, 182, 193, 0.5)"
-        stroke="#ff9eb5"
+        fill="rgba(169, 169, 169, 0.3)"
+        stroke="#8C92AC"
         strokeWidth="2"
       />
       
@@ -142,7 +142,7 @@ const SimpleRadarChart: React.FC<SimpleRadarChartProps> = ({
             cx={x}
             cy={y}
             r={3}
-            fill="#ff9eb5"
+            fill="#8C92AC"
           />
         );
       })}

@@ -124,10 +124,10 @@ export default function PerfumeDetailPage() {
                 <div className="mt-1 bg-gray-200 h-4 rounded overflow-hidden">
                   <div 
                     className="bg-purple-400 h-full" 
-                    style={{ width: `${(perfume.characteristics.musk / 9) * 100}%` }}
+                    style={{ width: `${(perfume.characteristics.musky / 9) * 100}%` }}
                   ></div>
                 </div>
-                <p className="text-right mt-1">{perfume.characteristics.musk}/9</p>
+                <p className="text-right mt-1">{perfume.characteristics.musky}/9</p>
               </div>
               
               <div className="p-3 bg-gray-50 rounded">
@@ -145,7 +145,7 @@ export default function PerfumeDetailPage() {
                 <h3 className="font-bold">스파이시</h3>
                 <div className="mt-1 bg-gray-200 h-4 rounded overflow-hidden">
                   <div 
-                    className="bg-orange-400 h-full" 
+                    className="bg-teal-400 h-full" 
                     style={{ width: `${(perfume.characteristics.spicy / 9) * 100}%` }}
                   ></div>
                 </div>

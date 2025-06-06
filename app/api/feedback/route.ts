@@ -217,10 +217,32 @@ export async function POST(request: NextRequest) {
     // Firebase에 세션 기반 피드백 저장
     if (validatedData.userId && validatedData.sessionId) {
       try {
-        await saveSessionFeedback(validatedData.userId, validatedData.sessionId, {
+        // undefined 값들을 제거하고 데이터 정리
+        const cleanFeedbackData = {
           ...feedback,
-          recommendations: recommendations
+          recommendations: recommendations,
+          // 명시적으로 필요한 필드들 확인
+          perfumeName: feedback.perfumeName || 'Unknown',
+          retentionPercentage: feedback.retentionPercentage || 100,
+          userId: validatedData.userId,
+          sessionId: validatedData.sessionId,
+          timestamp: new Date().toISOString()
+        };
+        
+        // undefined 값들을 재귀적으로 제거
+        const sanitizedFeedback = JSON.parse(JSON.stringify(cleanFeedbackData, (key, value) => {
+          return value === undefined ? null : value;
+        }));
+        
+        console.log('🔥 Firebase 저장용 피드백 데이터 준비:', {
+          hasPerfumeName: !!sanitizedFeedback.perfumeName,
+          perfumeName: sanitizedFeedback.perfumeName,
+          hasRecommendations: !!sanitizedFeedback.recommendations,
+          userId: validatedData.userId,
+          sessionId: validatedData.sessionId
         });
+        
+        await saveSessionFeedback(validatedData.userId, validatedData.sessionId, sanitizedFeedback);
         console.log('Firebase에 세션 피드백 저장 완료');
       } catch (firebaseError) {
         console.error('Firebase 피드백 저장 오류:', firebaseError);

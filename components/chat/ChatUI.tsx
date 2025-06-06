@@ -153,16 +153,7 @@ export default function ChatUI() {
         transition={{ duration: 0.6 }}
         className="relative w-[380px] h-[80vh] bg-white rounded-3xl border-4 border-dashed border-gray-300 p-6 pt-12 pb-14 shadow-lg flex flex-col"
       >
-        {/* 상단 인스타그램 아이디 */}
-        <div className="absolute top-6 right-6 text-gray-700 font-semibold flex items-center">
-          <span className="text-xs bg-yellow-200 px-2 py-0.5 rounded-full mr-1">♥</span>
-          @acscent_id
-        </div>
-        
-        {/* 왼쪽 위 점 장식들 */}
-        <div className="absolute -left-3 top-20 w-6 h-6 bg-amber-50 border-4 border-amber-400 rounded-full"></div>
-        <div className="absolute -left-2 top-36 w-4 h-4 bg-pink-200 border-2 border-pink-400 rounded-full"></div>
-        <div className="absolute left-6 -top-2 w-5 h-5 bg-yellow-300 border-2 border-yellow-400 rounded-full"></div>
+
         
         {/* 상단 귀여운 헤더 영역 */}
         <div className="flex flex-col items-center mb-6 bg-gradient-to-r from-pink-100 to-yellow-100 -mx-6 -mt-12 pt-10 pb-4 px-6 rounded-t-3xl shadow-sm">
@@ -277,9 +268,7 @@ export default function ChatUI() {
           </motion.button>
         </form>
         
-        {/* 왼쪽 하단 장식 */}
-        <div className="absolute -left-3 bottom-28 w-6 h-6 bg-amber-50 border-4 border-amber-400 rounded-full"></div>
-        <div className="absolute right-10 bottom-2 w-3 h-3 bg-pink-200 rounded-full"></div>
+
       </motion.div>
       
       {/* 모달 컴포넌트 */}
@@ -295,13 +284,9 @@ export default function ChatUI() {
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: [0.5, 1.2, 1], opacity: 1 }}
                 transition={{ duration: 1, times: [0, 0.6, 1] }}
-                className="w-48 h-48 mb-4"
+                className="w-32 h-32 mb-4 bg-gradient-to-br from-gray-700 to-black rounded-full flex items-center justify-center shadow-2xl"
               >
-                <img 
-                  src="/cute.png" 
-                  alt="Cute Character" 
-                  className="w-full h-full object-contain"
-                />
+                <div className="text-white text-4xl font-bold">AC</div>
               </motion.div>
               <h2 className="text-xl font-bold text-gray-800 mb-3">환영해요!</h2>
               <div className="text-gray-700 text-center leading-relaxed">

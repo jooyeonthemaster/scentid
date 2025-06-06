@@ -177,15 +177,35 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
   };
 
   const renderGranulesList = (granules: TestingGranule[]) => (
-    <div className="flex flex-wrap gap-1 mt-2">
-      {granules.map((granule, index) => (
-        <span
-          key={index}
-          className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
-        >
-          {granule.name} ({granule.drops}방울)
-        </span>
-      ))}
+    <div className="mt-2">
+      {granules.length > 3 ? (
+        <div className="space-y-1">
+          <div className="flex flex-wrap gap-1">
+            {granules.slice(0, 2).map((granule, index) => (
+              <span
+                key={index}
+                className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+              >
+                {granule.name}
+              </span>
+            ))}
+            <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+              +{granules.length - 2}개 더
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-1">
+          {granules.map((granule, index) => (
+            <span
+              key={index}
+              className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
+            >
+              {granule.name}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 
@@ -219,47 +239,45 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
 
   return (
     <div className={`bg-white rounded-lg shadow-sm border ${className}`}>
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">
+      <div className="p-4 sm:p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900">
             📝 레시피 히스토리
           </h3>
-          <span className="text-sm text-gray-500">
-            총 {recipes.length}개의 레시피
+          <span className="text-xs sm:text-sm text-gray-500">
+            총 {recipes.length}개
           </span>
         </div>
 
         {recipes.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="text-gray-400 text-4xl mb-4">📋</div>
-            <p className="text-gray-500">아직 생성된 레시피가 없습니다.</p>
-            <p className="text-gray-400 text-sm mt-2">
+          <div className="text-center py-6">
+            <div className="text-gray-400 text-3xl mb-3">📋</div>
+            <p className="text-gray-500 text-sm">아직 생성된 레시피가 없습니다.</p>
+            <p className="text-gray-400 text-xs mt-2">
               피드백을 통해 첫 번째 레시피를 만들어보세요!
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {recipes.map((recipe, index) => (
               <div
                 key={recipe.id}
-                className={`border rounded-lg p-4 transition-all cursor-pointer ${
+                className={`border rounded-lg transition-all cursor-pointer ${
                   selectedRecipe?.id === recipe.id
                     ? 'border-pink-500 bg-pink-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
                 onClick={() => handleRecipeSelect(recipe)}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
+                {/* 모바일 최적화된 헤더 */}
+                <div className="px-3 py-2 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-gray-900">
                         레시피 #{recipes.length - index}
                       </span>
-                      <span className="text-xs text-gray-500">
-                        {formatDate(recipe.createdAt)}
-                      </span>
                       {recipe.isBookmarked && (
-                        <span className="text-yellow-500">⭐</span>
+                        <span className="text-yellow-500 text-sm">⭐</span>
                       )}
                       {recipe.selectedFromHistory && (
                         <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
@@ -267,67 +285,76 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
                         </span>
                       )}
                     </div>
-
-                    {recipe.improvedRecipe?.originalPerfumeName && (
-                      <p className="text-sm text-gray-600 mb-2">
-                        기반: {recipe.improvedRecipe.originalPerfumeName}
-                      </p>
-                    )}
-
-                    {recipe.improvedRecipe?.testingRecipe?.granules && (
-                      <div>
-                        <p className="text-sm text-gray-700 mb-1">
-                          향료 {recipe.improvedRecipe.testingRecipe.granules.length}개
-                        </p>
-                        {renderGranulesList(recipe.improvedRecipe.testingRecipe.granules)}
-                      </div>
-                    )}
-
-                    {recipe.improvedRecipe?.overallExplanation && (
-                      <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-                        {recipe.improvedRecipe.overallExplanation}
-                      </p>
-                    )}
+                    <span className="text-xs text-gray-500">
+                      {formatDate(recipe.createdAt)}
+                    </span>
                   </div>
+                </div>
 
-                  <div className="flex items-center gap-2 ml-4">
+                {/* 컨텐츠 영역 */}
+                <div className="p-3">
+                  {recipe.improvedRecipe?.originalPerfumeName && (
+                    <p className="text-sm text-gray-600 mb-2">
+                      기반: <span className="font-medium">{recipe.improvedRecipe.originalPerfumeName}</span>
+                    </p>
+                  )}
+
+                  {recipe.improvedRecipe?.testingRecipe?.granules && (
+                    <div className="mb-3">
+                      <p className="text-sm text-gray-700 mb-1">
+                        향료 {recipe.improvedRecipe.testingRecipe.granules.length}개
+                      </p>
+                      {renderGranulesList(recipe.improvedRecipe.testingRecipe.granules)}
+                    </div>
+                  )}
+
+                  {recipe.improvedRecipe?.overallExplanation && (
+                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                      {recipe.improvedRecipe.overallExplanation}
+                    </p>
+                  )}
+
+                  {/* 모바일 최적화된 버튼 영역 */}
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         showRecipeDetail(recipe);
                       }}
-                      className="px-3 py-1 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
+                      className="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 font-medium"
                       title="레시피 상세 정보 보기"
                     >
                       상세 보기
                     </button>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleBookmark(recipe.id, recipe.isBookmarked || false);
-                      }}
-                      className={`p-2 rounded-lg transition-colors ${
-                        recipe.isBookmarked
-                          ? 'text-yellow-500 hover:text-yellow-600'
-                          : 'text-gray-400 hover:text-yellow-500'
-                      }`}
-                      title={recipe.isBookmarked ? '북마크 제거' : '북마크 추가'}
-                    >
-                      ⭐
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleBookmark(recipe.id, recipe.isBookmarked || false);
+                        }}
+                        className={`px-3 py-2 rounded-lg transition-colors font-medium ${
+                          recipe.isBookmarked
+                            ? 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
+                            : 'bg-gray-100 text-gray-600 hover:bg-yellow-100 hover:text-yellow-600'
+                        }`}
+                        title={recipe.isBookmarked ? '북마크 제거' : '북마크 추가'}
+                      >
+                        ⭐
+                      </button>
 
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        activateRecipe(recipe);
-                      }}
-                      disabled={activatingRecipe === recipe.id}
-                      className="px-3 py-1 bg-pink-500 text-white text-sm rounded-lg hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="이 레시피를 현재 레시피로 설정"
-                    >
-                      {activatingRecipe === recipe.id ? '설정 중...' : '활성화'}
-                    </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          activateRecipe(recipe);
+                        }}
+                        disabled={activatingRecipe === recipe.id}
+                        className="flex-1 px-3 py-2 bg-pink-500 text-white text-sm rounded-lg hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                        title="이 레시피를 현재 레시피로 설정"
+                      >
+                        {activatingRecipe === recipe.id ? '설정 중...' : '활성화'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -384,48 +411,50 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
       {/* 레시피 상세 모달 */}
       {showDetailModal && detailRecipe && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-lg w-full">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-hidden">
             {/* 모달 헤더 */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
-              <h3 className="text-xl font-bold text-gray-800 flex items-center">
-                <span className="text-2xl mr-3">⚗️</span>
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+              <h3 className="text-lg font-bold text-gray-800 flex items-center">
+                <span className="text-xl mr-2">⚗️</span>
                 향료 정보
               </h3>
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                className="text-gray-500 hover:text-gray-700 text-xl font-bold p-1"
               >
                 ×
               </button>
             </div>
 
             {/* 모달 내용 */}
-            <div className="p-6">
+            <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
               {/* 향료 조합 */}
               {detailRecipe.improvedRecipe?.testingRecipe?.granules && detailRecipe.improvedRecipe.testingRecipe.granules.length > 0 ? (
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-4">🧪 향료 조합</h4>
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <div className="grid gap-3">
+                <div className="mb-4">
+                  <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
+                    <span className="mr-2">🧪</span>향료 조합
+                  </h4>
+                  <div className="bg-blue-50 rounded-lg p-3">
+                    <div className="space-y-2">
                       {detailRecipe.improvedRecipe.testingRecipe.granules.map((granule: any, index: number) => (
-                        <div key={index} className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
-                          <div>
-                            <p className="font-semibold text-gray-800 text-lg">{granule.name}</p>
-                            <p className="text-sm text-gray-600">({granule.id})</p>
+                        <div key={index} className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-800 text-sm truncate">{granule.name}</p>
+                            <p className="text-xs text-gray-500">({granule.id})</p>
                           </div>
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-blue-600">{(granule.drops * 0.1).toFixed(1)}g</p>
-                            <p className="text-sm text-gray-600">{granule.drops}방울</p>
+                          <div className="text-right ml-2">
+                            <p className="text-lg font-bold text-blue-600">{(granule.drops * 0.1).toFixed(1)}g</p>
+                            <p className="text-xs text-gray-500">{granule.drops}방울</p>
                           </div>
                         </div>
                       ))}
                     </div>
                     
                     {/* 총 무게 */}
-                    <div className="mt-4 pt-3 border-t border-blue-200">
+                    <div className="mt-3 pt-2 border-t border-blue-200">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold text-gray-800 text-lg">총 무게:</span>
-                        <span className="text-2xl font-bold text-blue-600">
+                        <span className="font-medium text-gray-800 text-sm">총 무게:</span>
+                        <span className="text-lg font-bold text-blue-600">
                           {(detailRecipe.improvedRecipe.testingRecipe.granules.reduce((sum: number, g: any) => sum + g.drops, 0) * 0.1).toFixed(1)}g
                         </span>
                       </div>
@@ -433,28 +462,30 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold text-gray-800 mb-4">🚨 향료 정보 없음</h4>
+                <div className="mb-4">
+                  <h4 className="text-base font-semibold text-gray-800 mb-3 flex items-center">
+                    <span className="mr-2">🚨</span>향료 정보 없음
+                  </h4>
                   <div className="bg-gray-50 rounded-lg p-4 text-center">
-                    <p className="text-gray-600">이 레시피에는 향료 정보가 없습니다.</p>
+                    <p className="text-gray-600 text-sm">이 레시피에는 향료 정보가 없습니다.</p>
                   </div>
                 </div>
               )}
 
               {/* 버튼들 */}
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 pt-3 border-t border-gray-200">
                 <button
                   onClick={() => {
                     activateRecipe(detailRecipe);
                     setShowDetailModal(false);
                   }}
-                  className="flex-1 px-4 py-3 bg-pink-500 text-white rounded-xl hover:bg-pink-600 font-medium"
+                  className="flex-1 px-4 py-3 bg-pink-500 text-white rounded-lg hover:bg-pink-600 font-medium text-sm"
                 >
                   이 레시피 활성화
                 </button>
                 <button
                   onClick={() => setShowDetailModal(false)}
-                  className="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium"
+                  className="px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium text-sm"
                 >
                   닫기
                 </button>

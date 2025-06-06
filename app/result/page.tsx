@@ -173,9 +173,7 @@ export default function ResultPage() {
     router.push('/feedback');
   };
 
-  // 캐릭터 이미지 경로 (귀여운 캐릭터 이미지로 교체 필요)
-  const characterImagePath = '/cute.png';
-  const sadCharacterImagePath = '/sad.png';
+  // 장식적 요소들은 CSS 그라데이션으로 처리
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-slate-200 pt-6 pb-10 px-4">
@@ -212,9 +210,9 @@ export default function ResultPage() {
               <p className="text-center text-gray-700">분석 결과를 로딩 중입니다...</p>
             </div>
             
-            {/* 오른쪽 하단 캐릭터 */}
-            <div className="absolute -right-4 bottom-0 w-24 h-24">
-              <div className="text-6xl">💎</div>
+            {/* 하단 장식적 패턴 */}
+            <div className="absolute -right-6 bottom-0 w-32 h-32 opacity-10">
+              <div className="w-full h-full bg-gradient-to-tl from-gray-300 via-transparent to-transparent rounded-full blur-xl"></div>
             </div>
           </div>
         ) : error ? (
@@ -232,9 +230,9 @@ export default function ResultPage() {
               </button>
             </div>
             
-            {/* 오른쪽 하단 캐릭터 - 슬픈 표정 */}
-            <div className="absolute -right-4 bottom-0 w-24 h-24">
-              <div className="text-6xl">😔</div>
+            {/* 하단 장식적 패턴 */}
+            <div className="absolute -right-6 bottom-0 w-32 h-32 opacity-10">
+              <div className="w-full h-full bg-gradient-to-tl from-red-200 via-transparent to-transparent rounded-full blur-xl"></div>
             </div>
           </div>
         ) : analysisResult ? (
@@ -267,7 +265,9 @@ export default function ResultPage() {
               >
                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200 rounded-xl p-4 shadow-sm">
                   <div className="flex items-center">
-                    <div className="mr-3 text-2xl">💎</div>
+                    <div className="mr-3 w-10 h-10 bg-gradient-to-br from-gray-700 to-black rounded-full flex items-center justify-center shadow-lg">
+                      <div className="text-white text-lg font-bold">AC</div>
+                    </div>
                     <div>
                       <div className="font-bold text-gray-800 text-lg">{twitterName}</div>
                     </div>
@@ -289,15 +289,15 @@ export default function ResultPage() {
               {/* 왼쪽 위 점 장식 - 실버 */}
               <div className="absolute -left-3 top-20 w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-400 border-4 border-white rounded-full shadow-lg"></div>
               
-              {/* 오른쪽 아래 캐릭터 */}
+              {/* 하단 장식적 패턴 */}
               <motion.div 
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 transition={{ delay: 0.8, duration: 0.8, type: "spring" }}
-                className="absolute -right-4 bottom-0 w-24 h-24"
+                className="absolute -right-6 bottom-0 w-32 h-32 opacity-20"
               >
-                <div className="relative w-full h-full flex items-center justify-center">
-                  <div className="text-6xl filter drop-shadow-lg">💎</div>
+                <div className="relative w-full h-full">
+                  <div className="w-full h-full bg-gradient-to-tl from-gray-300 via-gray-100 to-transparent rounded-full blur-xl"></div>
                 </div>
               </motion.div>
               
@@ -850,14 +850,14 @@ export default function ResultPage() {
                                               </div>
                                               
                                               {/* 계절 및 시간 추천 - 시각화 */}
-                                              <div className="grid grid-cols-2 gap-3">
+                                              <div className="space-y-2">
                                                 {/* 계절 추천 */}
                                                 <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-3 border border-gray-200">
                                                   <h5 className="text-xs font-bold text-gray-900 mb-2 flex items-center">
                                                     <span className="mr-1">🌸</span>
                                                     추천 계절
                                                   </h5>
-                                                  <div className="flex justify-between">
+                                                  <div className="flex justify-center gap-4">
                                                     {['봄', '여름', '가을', '겨울'].map((season, idx) => {
                                                       const seasonRecommendation = (() => {
                                                         const categoryEntries = Object.entries(match.persona?.categories || {})
@@ -919,7 +919,7 @@ export default function ResultPage() {
                                                     <span className="mr-1">🕰️</span>
                                                     추천 시간대
                                                   </h5>
-                                                  <div className="flex justify-between">
+                                                  <div className="flex justify-center gap-4">
                                                     {['오전', '오후', '저녁', '밤'].map((time, idx) => {
                                                       const timeRecommendation = (() => {
                                                         const categoryEntries = Object.entries(match.persona?.categories || {})

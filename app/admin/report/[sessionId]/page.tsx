@@ -233,38 +233,47 @@ export default function ReportPage() {
     if (!characteristics) return null;
 
     const scentData = [
-      { name: '시트러스', value: characteristics.citrus || 0, color: '#FCD34D', emoji: '🍋' },
-      { name: '플로럴', value: characteristics.floral || 0, color: '#F472B6', emoji: '🌸' },
-      { name: '우디', value: characteristics.woody || 0, color: '#FB923C', emoji: '🌳' },
-      { name: '머스크', value: characteristics.musk || 0, color: '#A78BFA', emoji: '✨' },
-      { name: '프루티', value: characteristics.fruity || 0, color: '#EF4444', emoji: '🍎' },
-      { name: '스파이시', value: characteristics.spicy || 0, color: '#F97316', emoji: '🌶️' }
+      { name: '시트러스', value: characteristics.citrus || 0, color: '#8C92AC', emoji: '🍋' },
+      { name: '플로럴', value: characteristics.floral || 0, color: '#A8ADB8', emoji: '🌸' },
+      { name: '우디', value: characteristics.woody || 0, color: '#6B7280', emoji: '🌳' },
+      { name: '머스크', value: characteristics.musk || 0, color: '#9CA3AF', emoji: '✨' },
+      { name: '프루티', value: characteristics.fruity || 0, color: '#84848A', emoji: '🍎' },
+      { name: '스파이시', value: characteristics.spicy || 0, color: '#71717A', emoji: '🌶️' }
     ];
 
     return (
       <div style={{ marginTop: '16px' }}>
         {scentData.map((item, index) => (
-          <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+          <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
             <span style={{ fontSize: '14px', marginRight: '6px' }}>{item.emoji}</span>
             <span style={{ fontSize: '11px', fontWeight: '600', width: '50px', color: '#374151' }}>
               {item.name}
             </span>
             <div style={{ 
               flex: 1, 
-              height: '16px', 
-              background: '#F3F4F6', 
-              borderRadius: '8px', 
+              height: '8px', 
+              background: 'transparent',
+              border: '1px solid #D1D5DB',
               marginLeft: '8px',
               marginRight: '8px',
-              overflow: 'hidden'
+              position: 'relative'
             }}>
               <div style={{
                 width: `${(item.value / 10) * 100}%`,
                 height: '100%',
-                background: item.color,
-                borderRadius: '8px',
-                transition: 'width 0.3s ease'
-              }} />
+                background: `linear-gradient(90deg, ${item.color} 0%, ${item.color}CC 100%)`,
+                position: 'relative'
+              }}>
+                {/* 실험적인 패턴 오버레이 */}
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: `repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.15) 2px, rgba(255,255,255,0.15) 4px)`
+                }} />
+              </div>
             </div>
             <span style={{ fontSize: '12px', fontWeight: '700', color: '#374151', width: '20px' }}>
               {item.value}
@@ -1136,7 +1145,7 @@ export default function ReportPage() {
                   gap: '12px'
                 }}>
                   <div style={{
-                    padding: '4px 12px',
+                    padding: '4px 12px 4px 30px',
                     flex: 1,
                     textAlign: 'left'
                   }}>
@@ -1160,7 +1169,7 @@ export default function ReportPage() {
                   gap: '12px'
                 }}>
                 <div style={{ 
-                    padding: '4px 12px',
+                    padding: '4px 12px 4px 30px',
                     flex: 1,
                     textAlign: 'left'
                   }}>
@@ -1184,7 +1193,7 @@ export default function ReportPage() {
                   gap: '12px'
                 }}>
                   <div style={{
-                    padding: '4px 12px',
+                    padding: '4px 12px 4px 30px',
                     flex: 1,
                     textAlign: 'left'
                   }}>

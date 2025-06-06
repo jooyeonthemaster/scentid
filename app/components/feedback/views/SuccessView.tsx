@@ -9,7 +9,7 @@ import { characteristicToSliderValue } from '../constants/characteristics';
 import { formatScentCode, formatScentDisplay, findScentNameById, findScentIdByName } from '../utils/formatters';
 import { getScentMainCategory } from '../utils/scentUtils';
 import perfumePersonasData from '@/app/data/perfumePersonas';
-import Image from 'next/image';
+
 import GranuleIcon from '../components/GranuleIcon';
 import ScentInfoToggle from '../components/ScentInfoToggle';
 import TestingRecipeSection from '../components/TestingRecipeSection';
@@ -120,7 +120,7 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
           transition={{ duration: 0.7, type: "spring", stiffness: 150, damping: 15 }}
           className="w-28 h-28 md:w-32 md:h-32 flex items-center justify-center mb-6 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full p-3 shadow-2xl border-4 border-white/50 backdrop-blur-sm" 
         >
-          <Image src="/cute2.png" alt="Cute Character Happy" width={112} height={112} className="object-contain drop-shadow-lg" />
+          <div className="text-5xl">✨</div>
         </motion.div>
         <h3 className="text-2xl font-bold text-emerald-600 mb-2">🎉 조향 레시피 확정! 🎉</h3>
         <p className="text-gray-600 mb-8 text-sm max-w-md">아래 레시피에 따라 향료를 첨가하여 나만의 향수를 만들어보세요!</p>
@@ -176,7 +176,7 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClose}
-            className="w-full max-w-md px-6 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-2xl shadow-xl border border-white/20 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex items-center justify-center font-medium"
+            className="w-full max-w-md px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-800 text-white rounded-2xl shadow-xl border border-white/20 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex items-center justify-center font-medium"
           >
             닫기
           </motion.button>
@@ -194,7 +194,7 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
           transition={{ duration: 0.7, type: "spring", stiffness: 150, damping: 15 }}
           className="w-28 h-28 md:w-32 md:h-32 flex items-center justify-center mb-6 bg-gradient-to-br from-emerald-100 to-green-100 rounded-full p-3 shadow-2xl border-4 border-white/50 backdrop-blur-sm" 
         >
-          <Image src="/cute2.png" alt="Cute Character Happy" width={112} height={112} className="object-contain drop-shadow-lg" />
+          <div className="text-5xl">✨</div>
         </motion.div>
         <h3 className="text-2xl font-bold text-emerald-600 mb-4">🎉 레시피 확정!</h3>
         <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 p-6 max-w-md mx-4 hover:shadow-3xl transition-all duration-300">
@@ -241,64 +241,123 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
   return (
     <>
     <div className="py-5 flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 min-h-screen">
-      <div className="relative flex flex-col items-center mx-auto mb-8">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-          className="relative bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 rounded-2xl shadow-2xl backdrop-blur-sm border border-white/20 max-w-xs text-center mb-6"
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-indigo-400/20 via-purple-400/20 to-pink-400/20 rounded-2xl blur-xl"></div>
-          <p className="relative text-base md:text-lg font-semibold text-white drop-shadow-sm">
-            ✨ 맞춤 향수 레시피가 준비되었습니다!
-          </p>
-          <div 
-            className="absolute left-1/2 transform -translate-x-1/2 -bottom-3 w-0 h-0"
-            style={{
-              borderLeft: '15px solid transparent',
-              borderRight: '15px solid transparent',
-              borderTop: '15px solid rgb(168 85 247)',
-            }}
-          ></div>
-        </motion.div>
 
-        <motion.div 
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ duration: 0.7, type: "spring", stiffness: 150, damping: 15 }}
-          className="w-28 h-28 md:w-32 md:h-32 flex items-center justify-center bg-gradient-to-br from-purple-100 to-pink-100 rounded-full p-3 shadow-xl border-4 border-white/50 backdrop-blur-sm" 
-        >
-          <motion.div
-            initial={{ y: 0 }}
-            animate={{ y: [-6, 6, -6] }} 
-            transition={{
-              duration: 2.5, 
-              repeat: Infinity,
-              repeatType: "mirror",
-              ease: "easeInOut",
-            }}
-          >
-            <Image src="/cute2.png" alt="Cute Character Surprised" width={112} height={112} className="object-contain drop-shadow-lg" />
-          </motion.div>
-        </motion.div>
-      </div>
       
       {customizationLoading ? (
-        <div className="flex flex-col items-center justify-center py-12 bg-white/70 backdrop-blur-md rounded-3xl shadow-2xl border border-white/30 mx-4">
-          <div className="w-16 h-16 border-4 border-t-transparent border-indigo-500 rounded-full animate-spin mb-6 drop-shadow-lg"></div>
-          <p className="text-indigo-600 font-bold text-lg">맞춤 향수 레시피 생성 중...</p>
-          <p className="text-sm text-gray-500 mt-3 max-w-xs text-center">잠시만 기다려주세요. 고객님의 피드백을 반영한 맞춤형 향수 레시피를 준비하고 있습니다. 최대 15초 정도 소요됩니다.</p>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col items-center justify-center py-16 px-8 mx-4 rounded-3xl shadow-2xl border border-gray-300/50"
+          style={{ 
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          }}
+        >
+          {/* 로고 */}
+          <div className="mb-8">
+            <img 
+              src="/logo.png" 
+              alt="AC'SCENT Logo" 
+              className="w-16 h-16 mx-auto object-contain"
+            />
+          </div>
+
+          {/* 메인 타이틀 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-center mb-6"
+          >
+            <h3 
+              className="font-bold text-xl mb-2"
+              style={{ color: '#1e293b' }}
+            >
+              맞춤 향수 레시피 생성 중
+            </h3>
+            <div className="flex justify-center space-x-1 mb-4">
+              <motion.div
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
+                className="w-2 h-2 rounded-full"
+                style={{ background: '#475569' }}
+              ></motion.div>
+              <motion.div
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                className="w-2 h-2 rounded-full"
+                style={{ background: '#475569' }}
+              ></motion.div>
+              <motion.div
+                animate={{ opacity: [0.3, 1, 0.3] }}
+                transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                className="w-2 h-2 rounded-full"
+                style={{ background: '#475569' }}
+              ></motion.div>
+            </div>
+          </motion.div>
+
+          {/* 설명 텍스트 */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="text-center max-w-sm"
+          >
+            <p className="text-gray-600 text-sm leading-relaxed mb-3">
+              고객님의 피드백을 분석하여<br />
+              최적화된 향수 레시피를 준비하고 있습니다
+            </p>
+            <div 
+              className="inline-flex items-center px-4 py-2 rounded-full text-xs font-medium shadow-sm"
+              style={{ 
+                background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+                color: '#64748b',
+                border: '1px solid #cbd5e1'
+              }}
+            >
+              <span className="w-2 h-2 rounded-full mr-2" style={{ background: '#10b981' }}></span>
+              예상 소요시간: 최대 15초
+            </div>
+          </motion.div>
+
+          {/* 하단 장식 */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.7 }}
+            className="mt-8 flex space-x-2"
+          >
+            {[...Array(5)].map((_, i) => (
+              <motion.div
+                key={i}
+                animate={{ 
+                  y: [0, -8, 0],
+                  opacity: [0.3, 1, 0.3]
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity, 
+                  delay: i * 0.2,
+                  ease: "easeInOut"
+                }}
+                className="w-1 h-1 rounded-full"
+                style={{ background: '#94a3b8' }}
+              ></motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
       ) : recipe ? (
         <div className="mt-6 space-y-8 px-4">
-          <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:transform hover:scale-[1.02]">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 via-indigo-400/10 to-purple-400/10 rounded-3xl"></div>
+                      <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:transform hover:scale-[1.02]">
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-100/20 via-gray-200/20 to-gray-300/20 rounded-3xl"></div>
             <div className="relative">
-              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gradient-to-r from-transparent via-indigo-200 to-transparent">
-                <h4 className="font-bold text-indigo-800 text-lg flex items-center">
+                              <div className="flex items-center justify-between mb-6 pb-4 border-b border-gradient-to-r from-transparent via-gray-300 to-transparent">
+                <h4 className="font-bold text-gray-800 text-lg flex items-center">
                   <span className="text-2xl mr-3 drop-shadow-sm">🔍</span> 피드백 반영 결과
                 </h4>
-                <div className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-full px-4 py-2 text-xs font-medium shadow-lg border border-white/20">
+                <div className="bg-gradient-to-r from-gray-600 to-gray-800 text-white rounded-full px-4 py-2 text-xs font-medium shadow-lg border border-white/20">
                   원본 향 {recipe.retentionPercentage}% 유지
                 </div>
               </div>
@@ -321,8 +380,8 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
               )}
 
               {recipe.overallExplanation && (
-                <div className="mb-8 p-6 bg-gradient-to-br from-white to-blue-50/50 border border-blue-100/50 rounded-2xl shadow-lg backdrop-blur-sm hover:shadow-xl transition-all duration-300">
-                  <p className="font-semibold text-indigo-800 mb-3 flex items-center">
+                <div className="mb-8 p-6 bg-gradient-to-br from-white to-gray-50/50 border border-gray-200/50 rounded-2xl shadow-lg backdrop-blur-sm hover:shadow-xl transition-all duration-300">
+                  <p className="font-semibold text-gray-800 mb-3 flex items-center">
                     <span className="text-xl mr-3 drop-shadow-sm">💡</span> AI의 종합 의견
                   </p>
                   <p className="text-gray-700 leading-relaxed">{recipe.overallExplanation}</p>
@@ -332,21 +391,21 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
               <div className="mb-8">
                 <div className="flex justify-between items-center mb-3">
                   <p className="text-sm font-medium text-gray-700">기존 향 유지 비율</p>
-                  <p className="text-sm font-bold text-indigo-600">{recipe.retentionPercentage}%</p>
+                  <p className="text-sm font-bold text-gray-700">{recipe.retentionPercentage}%</p>
                 </div>
                 <div className="w-full h-6 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full overflow-hidden shadow-inner border border-gray-200/50">
                   <motion.div 
                     initial={{ width: 0 }}
                     animate={{ width: `${recipe.retentionPercentage}%` }}
                     transition={{ duration: 1.2, delay: 0.5, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-indigo-400 via-purple-500 to-pink-500 rounded-full shadow-lg"
+                    className="h-full bg-gradient-to-r from-gray-600 via-gray-700 to-gray-800 rounded-full shadow-lg"
                     style={{ boxShadow: 'inset 0 1px 2px rgba(255,255,255,0.3)' }}
                   ></motion.div>
                 </div>
               </div>
               
-              <div className="relative mx-auto w-full max-w-lg h-[380px] sm:h-[400px] md:h-[450px] mb-8 bg-gradient-to-br from-white to-indigo-50/30 p-6 rounded-2xl shadow-xl border border-indigo-100/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
-                <p className="font-semibold text-indigo-800 mb-4 flex items-center justify-center">
+              <div className="relative mx-auto w-full max-w-lg h-[380px] sm:h-[400px] md:h-[450px] mb-8 bg-gradient-to-br from-white to-gray-50/30 p-6 rounded-2xl shadow-xl border border-gray-200/30 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+                <p className="font-semibold text-gray-800 mb-4 flex items-center justify-center">
                   <span className="text-xl mr-3 drop-shadow-sm">📊</span> 향 프로필 변화
                 </p>
                 <CategoryChangeRadar feedback={feedback} recipe={recipe} originalPerfume={originalPerfume} />
@@ -358,17 +417,17 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setShowCategoryChanges(!showCategoryChanges)}
-                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-indigo-100/50 shadow-sm hover:shadow-md transition-all duration-300 hover:from-indigo-100 hover:to-purple-100"
+                    className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border border-gray-200/50 shadow-sm hover:shadow-md transition-all duration-300 hover:from-gray-100 hover:to-gray-200"
                   >
                     <div className="flex items-center">
                       <span className="text-xl mr-3 drop-shadow-sm">🔄</span>
-                      <span className="font-semibold text-indigo-800">주요 카테고리 변화</span>
+                      <span className="font-semibold text-gray-800">주요 카테고리 변화</span>
                     </div>
                     <motion.div
                       animate={{ rotate: showCategoryChanges ? 180 : 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                       </svg>
                     </motion.div>
@@ -388,7 +447,7 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.1 * idx, duration: 0.4 }}
-                          className="bg-gradient-to-r from-white to-indigo-50/30 rounded-2xl p-3 border border-indigo-100/30 shadow-lg backdrop-blur-sm hover:shadow-xl hover:transform hover:scale-[1.02] transition-all duration-300"
+                          className="bg-gradient-to-r from-white to-gray-50/30 rounded-2xl p-3 border border-gray-200/30 shadow-lg backdrop-blur-sm hover:shadow-xl hover:transform hover:scale-[1.02] transition-all duration-300"
                         >
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center">
@@ -434,16 +493,16 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
           <TestingRecipeSection recipe={recipe} feedback={feedback} />
           
           {recipe.testingRecipe && recipe.testingRecipe.granules.length > 0 && (
-            <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 border border-white/30 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:transform hover:scale-[1.02]">
-              <div className="absolute inset-0 bg-gradient-to-br from-amber-400/10 via-orange-400/10 to-pink-400/10 rounded-3xl"></div>
+            <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl p-8 border border-gray-200/50 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:transform hover:scale-[1.02]">
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-100/20 via-gray-200/20 to-gray-300/20 rounded-3xl"></div>
               <div className="relative">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-gradient-to-r from-transparent via-amber-200 to-transparent">
-                  <h4 className="font-bold text-amber-800 text-lg flex items-center">
+                                  <div className="flex items-center justify-between mb-6 pb-4 border-b border-gradient-to-r from-transparent via-gray-300 to-transparent">
+                  <h4 className="font-bold text-gray-800 text-lg flex items-center">
                     <span className="text-2xl mr-3 drop-shadow-sm">📊</span> 향료 구성 비율
                   </h4>
                 </div>
                 
-                <div className="bg-gradient-to-br from-white to-amber-50/30 rounded-2xl p-6 shadow-lg border border-amber-100/30 backdrop-blur-sm mb-6 hover:shadow-xl transition-shadow duration-300">
+                <div className="bg-gradient-to-br from-white to-gray-50/30 rounded-2xl p-6 shadow-lg border border-gray-200/30 backdrop-blur-sm mb-6 hover:shadow-xl transition-shadow duration-300">
                   <p className="text-gray-700 mb-6 text-center leading-relaxed">각 향료가 전체 레시피에서 차지하는 비율을 시각적으로 확인하세요.</p>
                   <div className="w-full md:w-2/3 lg:w-1/2 aspect-square max-w-[300px] mx-auto">
                     <Doughnut 
@@ -476,7 +535,7 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
                 
                 <div className="flex flex-col space-y-4">
                   {processedGranulesForDonut.map((granule, index) => (
-                    <div key={granule.id} className="bg-gradient-to-r from-white to-amber-50/30 rounded-2xl p-4 border border-amber-100/30 shadow-lg backdrop-blur-sm hover:shadow-xl hover:transform hover:scale-[1.02] transition-all duration-300">
+                    <div key={granule.id} className="bg-gradient-to-r from-white to-gray-50/30 rounded-2xl p-4 border border-gray-200/30 shadow-lg backdrop-blur-sm hover:shadow-xl hover:transform hover:scale-[1.02] transition-all duration-300">
                       <div className="flex items-center mb-2">
                         <div 
                           className="w-4 h-4 rounded-full mr-3 shadow-sm border border-white/50" 
@@ -485,13 +544,13 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
                         <div className="flex-grow">
                           <p className="text-sm font-medium text-gray-800">{granule.name}</p>
                         </div>
-                        <div className="text-sm font-medium text-amber-600 bg-amber-100/50 px-2 py-1 rounded-full">
+                        <div className="text-sm font-medium text-gray-700 bg-gray-100/50 px-2 py-1 rounded-full">
                           {granule.percentage}%
                         </div>
                       </div>
                       <div className="flex items-center mt-2">
                         <span className="text-xs text-gray-500 mr-3 bg-gray-100 px-2 py-1 rounded-full">{granule.id}</span>
-                        <span className="text-xs px-3 py-1 bg-gradient-to-r from-amber-100 to-orange-100 text-amber-700 rounded-full border border-amber-200/50 shadow-sm">
+                        <span className="text-xs px-3 py-1 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-full border border-gray-300/50 shadow-sm">
                           {granule.mainCategory || "일반"}
                         </span>
                       </div>
@@ -507,7 +566,7 @@ export const SuccessView: React.FC<SuccessViewProps> = ({
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowRecipeHistory(true)}
-              className="w-full px-6 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl shadow-xl border border-white/20 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex items-center justify-center font-medium"
+              className="w-full px-6 py-4 bg-gradient-to-r from-gray-600 to-gray-800 text-white rounded-2xl shadow-xl border border-white/20 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 flex items-center justify-center font-medium"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />

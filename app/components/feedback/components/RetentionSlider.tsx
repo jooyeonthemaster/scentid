@@ -27,7 +27,7 @@ export const RetentionSlider: React.FC<RetentionSliderProps> = ({ value, onChang
             onClick={() => onChange(percent)}
             className={`py-2 rounded-lg transition-all ${
               value === percent 
-                ? 'bg-orange-500 text-white font-bold' 
+                ? 'bg-gray-700 text-white font-bold' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
           >
@@ -39,7 +39,7 @@ export const RetentionSlider: React.FC<RetentionSliderProps> = ({ value, onChang
       {/* 시각적 표시 바 */}
       <div className="relative w-full h-2 bg-gray-200 rounded-full mt-4">
         <div 
-          className="absolute top-0 left-0 h-2 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
+          className="absolute top-0 left-0 h-2 bg-gradient-to-r from-gray-600 to-gray-800 rounded-full"
           style={{ width: `${value}%` }}
         ></div>
       </div>
@@ -50,7 +50,7 @@ export const RetentionSlider: React.FC<RetentionSliderProps> = ({ value, onChang
       </div>
       
       <div className="text-center mt-4">
-        <span className="text-lg font-bold text-orange-500">{value}%</span>
+        <span className="text-lg font-bold text-gray-700">{value}%</span>
       </div>
     </div>
   );

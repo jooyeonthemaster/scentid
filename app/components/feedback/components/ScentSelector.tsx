@@ -39,7 +39,11 @@ export const ScentSelector: React.FC<ScentSelectorProps> = ({
               placeholder="향료 이름으로 검색하세요..."
               value={scentSearchTerm}
               onChange={(e) => setScentSearchTerm(e.target.value)}
-              className="w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300 bg-gray-50 text-gray-900 placeholder-gray-600"
+              className="w-full p-2.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 text-gray-900 placeholder-gray-600 transition-all duration-200 shadow-sm"
+              style={{ 
+                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)'
+              }}
             />
           </div>
           
@@ -47,7 +51,11 @@ export const ScentSelector: React.FC<ScentSelectorProps> = ({
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value as PerfumeCategory)}
-              className="p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-300 bg-gray-50"
+              className="p-2.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 shadow-sm"
+              style={{ 
+                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+                boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)'
+              }}
             >
               {categoryOptions.map((category) => (
                 <option key={category} value={category}>{category}</option>
@@ -56,7 +64,13 @@ export const ScentSelector: React.FC<ScentSelectorProps> = ({
           </div>
         </div>
 
-        <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg bg-white">
+        <div 
+          className="max-h-60 overflow-y-auto border border-gray-300 rounded-lg shadow-lg"
+          style={{ 
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+            boxShadow: '0 15px 30px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.8)'
+          }}
+        >
           {availableScents
             .filter(scent => 
               (scentSearchTerm === '' || scent.name.toLowerCase().includes(scentSearchTerm.toLowerCase())) &&
@@ -67,17 +81,38 @@ export const ScentSelector: React.FC<ScentSelectorProps> = ({
               <div
                 key={scent.id}
                 onClick={() => setSelectedScent(scent)}
-                className={`p-3 border-b border-gray-100 hover:bg-orange-50 cursor-pointer transition-colors ${
-                  selectedScent?.id === scent.id ? 'bg-orange-50' : ''
+                className={`p-3 border-b border-gray-100 cursor-pointer transition-all duration-200 transform hover:scale-[1.02] ${
+                  selectedScent?.id === scent.id 
+                    ? 'shadow-lg' 
+                    : 'hover:shadow-md'
                 }`}
+                style={{ 
+                  background: selectedScent?.id === scent.id 
+                    ? 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)'
+                    : 'transparent'
+                }}
               >
                 <div className="flex justify-between">
                   <div>
-                    <p className="font-bold text-orange-600">{formatScentCode(scent.id || '')}</p>
+                    <p 
+                      className="font-bold"
+                      style={{ 
+                        color: selectedScent?.id === scent.id ? '#1e293b' : '#475569'
+                      }}
+                    >
+                      {formatScentCode(scent.id || '')}
+                    </p>
                     <p className="text-sm text-gray-600">{scent.name}</p>
                     <p className="text-xs text-gray-500">{scent.description}</p>
                   </div>
-                  <div className="text-xs bg-orange-100 text-orange-600 h-fit rounded-full px-2 py-0.5">
+                  <div 
+                    className="text-xs h-fit rounded-full px-2 py-0.5 shadow-sm"
+                    style={{ 
+                      background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%)',
+                      color: '#475569',
+                      border: '1px solid #cbd5e1'
+                    }}
+                  >
                     {scent.category || 'woody'}
                   </div>
                 </div>
@@ -90,11 +125,20 @@ export const ScentSelector: React.FC<ScentSelectorProps> = ({
         <button
           onClick={onAddScent}
           disabled={!selectedScent}
-          className={`px-5 py-2.5 rounded-lg transition-colors ${
+          className={`px-5 py-2.5 rounded-lg transition-all duration-200 transform shadow-lg ${
             selectedScent
-              ? 'bg-orange-500 text-white hover:bg-orange-600'
-              : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+              ? 'hover:scale-105 hover:shadow-xl'
+              : 'cursor-not-allowed opacity-50'
           }`}
+          style={{
+            background: selectedScent
+              ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+              : 'linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%)',
+            color: selectedScent ? '#ffffff' : '#9ca3af',
+            boxShadow: selectedScent
+              ? '0 10px 25px rgba(30, 41, 59, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1)'
+              : '0 4px 10px rgba(0, 0, 0, 0.1)'
+          }}
         >
           선택한 향료 추가하기
         </button>
@@ -123,15 +167,27 @@ export const SelectedScents: React.FC<SelectedScentsProps> = ({
       
       <div className="space-y-4 overflow-y-auto overflow-x-hidden scrollbar-hide" style={{ maxHeight: '300px' }}>
         {scents.map((scent) => (
-          <div key={scent.id} className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+          <div 
+            key={scent.id} 
+            className="border border-gray-300 rounded-lg p-4 shadow-lg transition-all duration-200 hover:shadow-xl"
+            style={{ 
+              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.8)'
+            }}
+          >
             <div className="flex justify-between items-center">
               <div>
-                <p className="font-bold text-orange-600">{formatScentCode(scent.id || '')}</p>
-                <p className="text-sm text-gray-700">{scent.name}</p>
+                <p className="font-bold text-gray-700">{formatScentCode(scent.id || '')}</p>
+                <p className="text-sm text-gray-600">{scent.name}</p>
               </div>
               <button
                 onClick={() => onRemove(scent.id || '')}
-                className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-full hover:bg-red-100"
+                className="w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-110 shadow-md"
+                style={{ 
+                  background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)',
+                  color: '#dc2626',
+                  border: '1px solid #fecaca'
+                }}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

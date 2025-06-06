@@ -81,7 +81,7 @@ const ScentInfoToggle: React.FC<ScentInfoToggleProps> = ({ title, content }) => 
     <div className="mt-2">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-3 py-2 bg-amber-50 hover:bg-amber-100 rounded-md text-sm text-amber-800 transition-colors"
+        className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 hover:bg-gray-100 rounded-md text-sm text-gray-800 transition-colors"
       >
         <span>{isOpen ? title.replace('펼치기', '접기') : title}</span>
         <svg 
@@ -96,7 +96,7 @@ const ScentInfoToggle: React.FC<ScentInfoToggleProps> = ({ title, content }) => 
       </button>
       
       {isOpen && (
-        <div className="mt-2 p-3 bg-amber-50 rounded-md text-sm text-amber-900 border border-amber-200">
+        <div className="mt-2 p-3 bg-gray-50 rounded-md text-sm text-gray-700 border border-gray-200">
           {/* content를 문단별로 나누어 표시 (개행 문자 기준) */}
           {content.split('\n').map((paragraph, index) => (
             <p key={index} className={index > 0 ? "mt-2" : ""}>

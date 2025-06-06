@@ -37,7 +37,7 @@ export const CharacteristicSlider: React.FC<CharacteristicSliderProps> = ({
             {CHARACTERISTIC_NAMES[characteristic]}을(를) 조정해보세요
           </span>
         </div>
-        <span className="text-sm font-medium text-orange-500">
+        <span className="text-sm font-medium text-gray-700">
           {CHARACTERISTIC_LABELS[characteristic][value]}
         </span>
       </div>
@@ -50,7 +50,7 @@ export const CharacteristicSlider: React.FC<CharacteristicSliderProps> = ({
         <div className="flex-1 relative">
           <div className="w-full h-1 bg-gray-200 rounded-full">
             <div 
-              className="absolute top-0 left-0 h-1 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full"
+              className="absolute top-0 left-0 h-1 bg-gradient-to-r from-gray-600 to-gray-800 rounded-full"
               style={{ width: `${(sliderValue / 5) * 100}%` }}
             ></div>
           </div>
@@ -62,7 +62,7 @@ export const CharacteristicSlider: React.FC<CharacteristicSliderProps> = ({
                 onClick={() => onChange(characteristic, sliderToCharacteristicValue(val))}
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
                   sliderValue === val 
-                    ? 'bg-orange-500 text-white font-bold' 
+                    ? 'bg-gray-700 text-white font-bold' 
                     : 'bg-white border border-gray-300 text-gray-600'
                 }`}
               >

@@ -214,7 +214,7 @@ export default function PersonalInfoForm() {
       
       // 사용자 및 세션 정보 추가 (Firebase 저장을 위해)
       const userPin = personalInfo.userPhone.replace(/-/g, ''); // 하이픈 제거된 4자리 숫자
-      const userId = `${userPin}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`; // 4자리 + 타임스탬프 + 랜덤문자열
+      const userId = userPin; // 4자리 숫자를 userId로 사용
       const sessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
       
       // 디버깅을 위한 로그

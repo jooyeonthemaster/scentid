@@ -102,6 +102,7 @@ export interface PersonalColor {
 
 // 이미지 분석 결과 타입
 export interface ImageAnalysisResult {
+  analysisId?: string;         // 이미지 분석 ID 추가
   traits: TraitScores;
   scentCategories: ScentCategoryScores;
   dominantColors: string[];

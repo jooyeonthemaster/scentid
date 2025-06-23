@@ -128,6 +128,7 @@ export async function POST(request: NextRequest) {
     analysisResult.matchingPerfumes = matchingPerfumes;
     
     // Firebase에 이미지 분석 결과 및 이미지 링크 저장
+    let analysisId = null;
     if (userId && sessionId) {
       try {
         // 세션에 추가 정보 포함
@@ -139,13 +140,17 @@ export async function POST(request: NextRequest) {
           personality: idolPersonality.split(',').map(s => s.trim()),
           charms: idolCharms
         };
-        await saveImageAnalysisWithLink(userId, sessionId, sessionData, imageUrl);
-        console.log('Firebase에 이미지 분석 결과 저장 완료');
+        const firebaseResult = await saveImageAnalysisWithLink(userId, sessionId, sessionData, imageUrl);
+        analysisId = firebaseResult.analysisId;
+        console.log('Firebase에 이미지 분석 결과 저장 완료, analysisId:', analysisId);
       } catch (firebaseError) {
         console.error('Firebase 저장 오류:', firebaseError);
         // Firebase 저장 실패해도 분석 결과는 반환
       }
     }
+    
+    // analysisId를 분석 결과에 추가
+    analysisResult.analysisId = analysisId;
     
     // persona 객체가 있는지 확인
     for (let i = 0; i < matchingPerfumes.length; i++) {

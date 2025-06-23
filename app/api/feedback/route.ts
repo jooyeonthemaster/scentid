@@ -222,8 +222,8 @@ export async function POST(request: NextRequest) {
           ...feedback,
           recommendations: recommendations,
           // 명시적으로 필요한 필드들 확인
-          perfumeName: feedback.perfumeName || 'Unknown',
-          retentionPercentage: feedback.retentionPercentage || 100,
+          perfumeName: feedback.perfumeName ?? 'Unknown',
+          retentionPercentage: feedback.retentionPercentage ?? 100,
           userId: validatedData.userId,
           sessionId: validatedData.sessionId,
           timestamp: new Date().toISOString()
@@ -298,7 +298,7 @@ function generateAdjustmentRecommendations(
   const adjustments: NoteAdjustment[] = [];
   
   // 기존 향수 유지 비율에 따른 기본 배합량 계산
-  const baseRetention = (feedback.retentionPercentage || 100) / 100;
+  const baseRetention = (feedback.retentionPercentage ?? 100) / 100;
   const baseAmount = 50 * baseRetention; // 기본 50ml 가정
   
   // 기본 향수 조정 정보
@@ -377,7 +377,7 @@ function generateAdjustmentRecommendations(
   return {
     perfumeId: perfume.id,
     perfumeName: perfume.name,
-    baseRetention: feedback.retentionPercentage || 100,
+    baseRetention: feedback.retentionPercentage ?? 100,
     baseAmount: `${baseAmount.toFixed(1)}ml`,
     adjustments,
     totalAdjustments: adjustments.length,
@@ -497,7 +497,7 @@ function generateExplanation(
   perfume: PerfumePersona
 ): string {
   // 기본 향수 유지 비율 텍스트
-  const retentionPercentage = feedback.retentionPercentage || 100;
+  const retentionPercentage = feedback.retentionPercentage ?? 100;
   let baseText;
   if (retentionPercentage === 100) {
     baseText = `${perfume.name} 향수의 기본 배합을 그대로 유지합니다.`;

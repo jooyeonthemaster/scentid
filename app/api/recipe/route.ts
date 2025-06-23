@@ -37,13 +37,13 @@ export async function POST(request: NextRequest) {
 
 고객 피드백:
 - 전체 평점: ${feedback.overallRating}/5
-- 인상: ${feedback.impression || '없음'}
-- 유지 비율: ${feedback.retentionPercentage || 100}%
-- 카테고리 선호도: ${JSON.stringify(feedback.categoryPreferences || {})}
-- 특성 평가: ${JSON.stringify(feedback.userCharacteristics || {})}
-- 추가 의견: ${feedback.additionalComments || '없음'}
+- 인상: ${feedback.impression ?? '없음'}
+- 유지 비율: ${feedback.retentionPercentage ?? 100}%
+- 카테고리 선호도: ${JSON.stringify(feedback.categoryPreferences ?? {})}
+- 특성 평가: ${JSON.stringify(feedback.userCharacteristics ?? {})}
+- 추가 의견: ${feedback.additionalComments ?? '없음'}
 
-조정 추천사항: ${JSON.stringify(adjustmentRecommendations || {})}
+조정 추천사항: ${JSON.stringify(adjustmentRecommendations ?? {})}
 
 다음 형식으로 개선된 레시피를 제안해주세요:
 1. 10ml 레시피 (구체적인 향료와 양)
@@ -72,10 +72,19 @@ export async function POST(request: NextRequest) {
       generatedAt: new Date().toISOString()
     };
     
+    console.log('레시피 저장 요청:', {
+      userId,
+      sessionId,
+      analysisId: body.analysisId,
+      hasOriginalPerfumeData: !!body.originalPerfumeId && !!body.originalPerfumeName,
+      hasTestingRecipe: !!body.testingRecipe,
+      granuleCount: body.testingRecipe?.granules?.length || 0
+    });
+
     // Firebase에 레시피 저장
     if (userId && sessionId) {
       try {
-        await saveImprovedRecipe(userId, sessionId, recipeData);
+        await saveImprovedRecipe(userId, sessionId, recipeData, body.analysisId);
         console.log('Firebase에 개선된 레시피 저장 완료');
       } catch (firebaseError) {
         console.error('Firebase 레시피 저장 오류:', firebaseError);

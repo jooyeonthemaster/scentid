@@ -91,8 +91,7 @@ export default function AdminPage() {
   const filteredSessions = sessions.filter(session => {
     const matchesSearch = 
       session.phoneNumber.includes(searchTerm) ||
-      session.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      session.idolName.toLowerCase().includes(searchTerm.toLowerCase());
+      session.customerName.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesStatus = statusFilter === 'all' || session.completionStatus === statusFilter;
     
@@ -144,13 +143,36 @@ export default function AdminPage() {
         </div>
       </div>
 
+      {/* 경고문 */}
+      <div className="bg-gradient-to-r from-red-600 via-red-500 to-red-600 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex items-center justify-center space-x-4">
+            <div className="flex-shrink-0">
+              <div className="text-4xl animate-pulse">⚠️</div>
+            </div>
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-white mb-2">
+                🚨 주의: AC'SCENT ID 일반용 퍼스널 센트 분석 전용 🚨
+              </h2>
+              <p className="text-red-100 text-lg font-medium">
+                이 시스템은 <span className="font-bold text-white underline">퍼스널 센트 분석 전용</span>입니다. 
+                <span className="font-bold text-yellow-300"> 뿌덕(Puduck) 시스템과 헷갈리지 마세요!</span>
+              </p>
+            </div>
+            <div className="flex-shrink-0">
+              <div className="text-4xl animate-pulse">⚠️</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 검색 및 필터 */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                검색 (비밀번호, 고객명, 최애명)
+                검색 (비밀번호, 고객명)
               </label>
               <input
                 type="text"
@@ -189,7 +211,7 @@ export default function AdminPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     고객 정보
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="hidden px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     최애
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -222,7 +244,7 @@ export default function AdminPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="hidden px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{session.idolName}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

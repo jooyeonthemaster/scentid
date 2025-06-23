@@ -35,8 +35,8 @@ const NOTEBOOK_LAYOUT = {
     image: { x: 30, y: 110, width: 155, height: 185 },
     traitChart: { x: 30, y: 295, width: 155, height: 185 }, // 이미지 바로 아래, 같은 사이즈
     colorPalette: { x: 30, y: 462, width: 155, height: 80 }, // 레이더 차트 바로 아래
-    name: { x: 300, y: 130, width: 180, height: 25 },
-    gender: { x: 300, y: 153, width: 100, height: 30 },
+    name: { x: 300, y: 120, width: 180, height: 40 },
+    gender: { x: 300, y: 155, width: 100, height: 30 },
     keywords: { x: 175, y: 205, width: 170, height: 90 },
     radarChart: { x: 40, y: 300, width: 160, height: 160 },
     features: { x: 185, y: 330, width: 180, height: 90 },
@@ -799,7 +799,7 @@ export default function ReportPage() {
             {session?.imageUrl ? (
               <img 
                 src={session.imageUrl} 
-                alt="최애 이미지" 
+                alt="이미지" 
                 className="main-image"
               />
             ) : (
@@ -815,7 +815,7 @@ export default function ReportPage() {
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
-              height: '50%',
+              height: '100%',
               width: '100%',
               overflow: 'hidden'
             }}>

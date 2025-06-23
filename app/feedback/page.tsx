@@ -28,6 +28,7 @@ export default function FeedbackPage() {
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [showRecipeHistory, setShowRecipeHistory] = useState(false);
   const [currentRecipe, setCurrentRecipe] = useState<RecipeHistoryItem | undefined>(undefined);
+  const [analysisId, setAnalysisId] = useState<string | null>(null);
   
   // 사용자 ID와 세션 ID (실제로는 인증 시스템에서 가져와야 함)
   const [userId] = useState(() => {
@@ -57,6 +58,15 @@ export default function FeedbackPage() {
       
       // 분석 결과 파싱하여 향수 정보 가져오기
       const parsedResult = JSON.parse(storedResult);
+      
+      // analysisId 추출
+      if (parsedResult.analysisId) {
+        setAnalysisId(parsedResult.analysisId);
+        console.log('분석 ID 로드됨:', parsedResult.analysisId);
+      } else {
+        console.warn('분석 결과에 analysisId가 없습니다. 세션 기반으로 동작합니다.');
+      }
+      
       const topMatch = parsedResult.matchingPerfumes?.find((p: any) => p.persona);
       
       if (!topMatch || !topMatch.persona) {
@@ -182,6 +192,7 @@ export default function FeedbackPage() {
                 <RecipeHistory
                   userId={userId}
                   sessionId={sessionId}
+                  analysisId={analysisId || undefined}
                   currentRecipe={currentRecipe}
                   onRecipeSelect={handleRecipeSelect}
                   onRecipeActivate={handleRecipeActivate}
@@ -210,51 +221,19 @@ export default function FeedbackPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: isLoaded ? 1 : 0, scale: isLoaded ? 1 : 0.95 }}
               transition={{ duration: 0.6 }}
-              className="relative bg-white rounded-3xl p-6 shadow-lg border border-gray-200"
-              style={{ 
-                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
-                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-              }}
+              className="h-full"
             >
-              {/* 왼쪽 위 점 장식 */}
-              <div className="absolute -left-3 top-20 w-6 h-6 bg-gray-100 border-4 border-gray-400 rounded-full"></div>
-              
-              {/* 오른쪽 아래 캐릭터 - 다이아몬드 이모지로 변경 */}
-              <motion.div 
-                initial={{ x: 50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.8, type: "spring" }}
-                className="absolute -right-4 bottom-32 w-24 h-24"
-              >
-                <div className="relative w-full h-full flex items-center justify-center text-6xl">
-                  💎
+              {/* 현재 활성화된 레시피 표시 */}
+              {currentRecipe && (
+                <div className="mb-4 p-3 bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 rounded-lg">
+                  <p className="text-sm text-gray-800">
+                    🎯 <strong>활성화된 레시피:</strong> {currentRecipe.originalPerfumeName || '이전 레시피'}
+                  </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {currentRecipe.testingRecipe?.granules?.length || 0}개 향료 조합
+                  </p>
                 </div>
-              </motion.div>
-              
-              {/* 왼쪽 하단 장식 */}
-              <div className="absolute -left-3 bottom-28 w-6 h-6 bg-gray-100 border-4 border-gray-400 rounded-full"></div>
-              
-              {/* 헤더 영역 */}
-              <div className="text-center mb-6 pt-4">
-                <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                  <span className="bg-gradient-to-r from-gray-700 to-black text-white px-3 py-2 rounded-lg">향수 피드백</span>
-                </h1>
-                <p className="text-gray-600 text-sm">
-                  추천된 향수에 대한 피드백을 입력해주세요.
-                </p>
-                
-                {/* 현재 활성화된 레시피 표시 */}
-                {currentRecipe && (
-                  <div className="mt-4 p-3 bg-gradient-to-r from-gray-100 to-gray-200 border border-gray-300 rounded-lg">
-                    <p className="text-sm text-gray-800">
-                      🎯 <strong>활성화된 레시피:</strong> {currentRecipe.originalPerfumeName || '이전 레시피'}
-                    </p>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {currentRecipe.testingRecipe?.granules?.length || 0}개 향료 조합
-                    </p>
-                  </div>
-                )}
-              </div>
+              )}
 
               {/* FeedbackForm 컴포넌트 사용 */}
               {perfume && (
@@ -301,10 +280,11 @@ export default function FeedbackPage() {
                   <RecipeHistory
                     userId={userId}
                     sessionId={sessionId}
+                    analysisId={analysisId || undefined}
                     currentRecipe={currentRecipe}
                     onRecipeSelect={handleRecipeSelect}
                     onRecipeActivate={handleRecipeActivate}
-                    className="max-h-96 overflow-y-auto"
+                    className="max-h-[500px] lg:max-h-[600px] overflow-y-auto"
                   />
                 </motion.div>
               )}

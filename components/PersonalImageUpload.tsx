@@ -103,7 +103,7 @@ export default function PersonalImageUpload({ onImageUpload, previewUrl }: Perso
             <p className="mt-2 text-sm text-gray-600">
               {isDragActive ? 
                 "여기에 파일을 놓으세요!" : 
-                "최애의 이미지를 드래그하거나 클릭하여 업로드하세요"
+                "이미지를 드래그하거나 클릭하여 업로드하세요"
               }
             </p>
             <p className="mt-1 text-xs text-gray-500">

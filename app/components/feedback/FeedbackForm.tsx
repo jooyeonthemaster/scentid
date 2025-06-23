@@ -92,14 +92,14 @@ export default function FeedbackForm({
   const totalSteps = 3;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-gray-50 via-gray-100 to-slate-200">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-lg max-h-[90vh] overflow-y-auto relative border border-gray-200"
+    <div className="w-full h-full">
+      <div className="w-full bg-white rounded-xl lg:rounded-3xl shadow-lg overflow-y-auto relative border border-gray-200 min-h-[500px] lg:min-h-[600px]"
            style={{ 
              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%)',
              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
            }}>
-        {/* 상단 닫기 버튼 */}
-        <div className="absolute top-4 right-4 z-10">
+        {/* 상단 닫기 버튼 - 모바일에서만 표시 */}
+        <div className="absolute top-4 right-4 z-10 lg:hidden">
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-200 transition-colors"
@@ -118,7 +118,7 @@ export default function FeedbackForm({
               ✨
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-800">AC'SCENT ID</h2>
+              <h2 className="text-lg lg:text-xl font-bold text-gray-800">AC'SCENT ID</h2>
               <p className="text-xs text-gray-500">당신만의 맞춤 향수</p>
             </div>
           </div>
@@ -131,7 +131,7 @@ export default function FeedbackForm({
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-1">맞춤 향수</p>
-                <h3 className="text-base font-medium text-gray-800">{originalPerfume.name}</h3>
+                <h3 className="text-sm lg:text-base font-medium text-gray-800">{originalPerfume.name}</h3>
                 <p className="text-xs text-gray-600 mt-1">{originalPerfume.id}</p>
               </div>
             </div>

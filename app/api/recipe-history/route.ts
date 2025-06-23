@@ -1,23 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionRecipes, getRecipeById, setSessionActiveRecipe, toggleRecipeBookmark } from '../../../lib/firebaseApi';
+import { getSessionRecipes, getAnalysisRecipes, getRecipeById, setSessionActiveRecipe, toggleRecipeBookmark } from '../../../lib/firebaseApi';
 
-// GET: 세션별 레시피 히스토리 조회
+// GET: 이미지 분석별 레시피 히스토리 조회
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const userId = searchParams.get('userId');
     const sessionId = searchParams.get('sessionId');
+    const analysisId = searchParams.get('analysisId');
 
-    if (!userId || !sessionId) {
+    if (!userId) {
       return NextResponse.json(
-        { error: 'userId와 sessionId가 필요합니다.' },
+        { error: 'userId가 필요합니다.' },
         { status: 400 }
       );
     }
 
-    console.log(`레시피 히스토리 조회 요청: userId=${userId}, sessionId=${sessionId}`);
-
-    const recipes = await getSessionRecipes(userId, sessionId);
+    let recipes = [];
+    
+    if (analysisId) {
+      // analysisId가 있으면 분석별 레시피 조회
+      console.log(`분석별 레시피 히스토리 조회 요청: userId=${userId}, analysisId=${analysisId}`);
+      recipes = await getAnalysisRecipes(userId, analysisId);
+    } else if (sessionId) {
+      // 하위호환성을 위해 sessionId만 있으면 기존 방식 사용
+      console.log(`세션별 레시피 히스토리 조회 요청 (하위호환): userId=${userId}, sessionId=${sessionId}`);
+      recipes = await getSessionRecipes(userId, sessionId);
+    } else {
+      return NextResponse.json(
+        { error: 'analysisId 또는 sessionId가 필요합니다.' },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json({
       success: true,

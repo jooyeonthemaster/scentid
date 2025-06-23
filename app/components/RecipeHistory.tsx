@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { RecipeHistoryItem, RecipeHistoryResponse, RecipeActionResponse, TestingGranule } from '../types/perfume';
 
 interface RecipeHistoryProps {
   userId: string;
   sessionId: string;
+  analysisId?: string;
   currentRecipe?: RecipeHistoryItem;
   onRecipeSelect?: (recipe: RecipeHistoryItem) => void;
   onRecipeActivate?: (recipe: RecipeHistoryItem) => void;
@@ -15,49 +16,62 @@ interface RecipeHistoryProps {
 const RecipeHistory: React.FC<RecipeHistoryProps> = ({
   userId,
   sessionId,
+  analysisId,
   currentRecipe,
   onRecipeSelect,
   onRecipeActivate,
   className = ''
 }) => {
   const [recipes, setRecipes] = useState<RecipeHistoryItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedRecipe, setSelectedRecipe] = useState<RecipeHistoryItem | null>(null);
   const [showComparison, setShowComparison] = useState(false);
   const [activatingRecipe, setActivatingRecipe] = useState<string | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [detailRecipe, setDetailRecipe] = useState<RecipeHistoryItem | null>(null);
+  const [selectedVolumeType, setSelectedVolumeType] = useState<'10ml' | '50ml'>('10ml');
 
-  // 레시피 히스토리 조회
-  const fetchRecipeHistory = async () => {
-    if (!userId || !sessionId) return;
-
-    setLoading(true);
-    setError(null);
-
+  // 레시피 히스토리 로드
+  const loadRecipeHistory = useCallback(async () => {
     try {
-      const response = await fetch(
-        `/api/recipe-history?userId=${userId}&sessionId=${sessionId}`
-      );
+      setLoading(true);
+      setError(null);
       
-      if (!response.ok) {
-        throw new Error('레시피 히스토리 조회 실패');
+      // analysisId가 있으면 분석별로, 없으면 세션별로 조회
+      const params = new URLSearchParams();
+      params.append('userId', userId);
+      
+      if (analysisId) {
+        params.append('analysisId', analysisId);
+        console.log('분석별 레시피 히스토리 조회:', { userId, analysisId });
+      } else {
+        params.append('sessionId', sessionId);
+        console.log('세션별 레시피 히스토리 조회 (하위호환):', { userId, sessionId });
       }
-
-      const data: RecipeHistoryResponse = await response.json();
+      
+      const response = await fetch(`/api/recipe-history?${params}`);
+      const data = await response.json();
       
       if (data.success) {
-        setRecipes(data.recipes);
+        setRecipes(data.recipes || []);
+        console.log(`레시피 히스토리 로드 완료: ${data.recipes?.length || 0}개`);
       } else {
-        setError(data.error || '알 수 없는 오류가 발생했습니다.');
+        setError(data.error || '레시피 히스토리를 불러올 수 없습니다.');
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : '네트워크 오류가 발생했습니다.');
+      console.error('레시피 히스토리 로딩 오류:', err);
+      setError('레시피 히스토리를 불러오는 중 오류가 발생했습니다.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId, sessionId, analysisId]);
+
+  useEffect(() => {
+    if (userId && (sessionId || analysisId)) {
+      loadRecipeHistory();
+    }
+  }, [loadRecipeHistory]);
 
   // 레시피 북마크 토글
   const toggleBookmark = async (recipeId: string, isBookmarked: boolean) => {
@@ -163,10 +177,6 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
     };
   };
 
-  useEffect(() => {
-    fetchRecipeHistory();
-  }, [userId, sessionId]);
-
   const formatDate = (timestamp: number) => {
     return new Date(timestamp).toLocaleString('ko-KR', {
       month: 'short',
@@ -209,6 +219,23 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
     </div>
   );
 
+  // 향료 계산 함수 (기준량 2배 증가: 10ml=2g, 50ml=10g)
+  const calculateGrams = (drops: number, volumeType: '10ml' | '50ml') => {
+    if (volumeType === '10ml') {
+      // 10ml 기준: 2g 총량 (방울당 0.2g)
+      return (drops * 0.2).toFixed(1);
+    } else {
+      // 50ml 기준: 10g 총량 (방울당 1g)
+      return (drops * 1.0).toFixed(1);
+    }
+  };
+
+  // 총 무게 계산 함수
+  const calculateTotalWeight = (granules: any[], volumeType: '10ml' | '50ml') => {
+    const totalDrops = granules.reduce((sum: number, g: any) => sum + g.drops, 0);
+    return calculateGrams(totalDrops, volumeType);
+  };
+
   if (loading) {
     return (
       <div className={`bg-white rounded-lg shadow-sm border p-6 ${className}`}>
@@ -227,7 +254,7 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
           <div className="text-red-500 mb-2">⚠️ 오류 발생</div>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
-            onClick={fetchRecipeHistory}
+            onClick={loadRecipeHistory}
             className="px-4 py-2 bg-pink-500 text-white rounded-lg hover:bg-pink-600"
           >
             다시 시도
@@ -428,6 +455,33 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
 
             {/* 모달 내용 */}
             <div className="p-4 overflow-y-auto max-h-[calc(90vh-140px)]">
+              {/* 용량 선택 토글 */}
+              <div className="mb-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">향수 용량 선택</h4>
+                <div className="flex bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setSelectedVolumeType('10ml')}
+                    className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      selectedVolumeType === '10ml'
+                        ? 'bg-blue-500 text-white shadow-sm'
+                        : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                  >
+                    10ml (총 2g)
+                  </button>
+                  <button
+                    onClick={() => setSelectedVolumeType('50ml')}
+                    className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      selectedVolumeType === '50ml'
+                        ? 'bg-blue-500 text-white shadow-sm'
+                        : 'text-gray-600 hover:text-gray-800'
+                    }`}
+                  >
+                    50ml (총 10g)
+                  </button>
+                </div>
+              </div>
+
               {/* 향료 조합 */}
               {detailRecipe.improvedRecipe?.testingRecipe?.granules && detailRecipe.improvedRecipe.testingRecipe.granules.length > 0 ? (
                 <div className="mb-4">
@@ -443,7 +497,7 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
                             <p className="text-xs text-gray-500">({granule.id})</p>
                           </div>
                           <div className="text-right ml-2">
-                            <p className="text-lg font-bold text-blue-600">{(granule.drops * 0.1).toFixed(1)}g</p>
+                            <p className="text-lg font-bold text-blue-600">{calculateGrams(granule.drops, selectedVolumeType)}g</p>
                             <p className="text-xs text-gray-500">{granule.drops}방울</p>
                           </div>
                         </div>
@@ -455,7 +509,7 @@ const RecipeHistory: React.FC<RecipeHistoryProps> = ({
                       <div className="flex justify-between items-center">
                         <span className="font-medium text-gray-800 text-sm">총 무게:</span>
                         <span className="text-lg font-bold text-blue-600">
-                          {(detailRecipe.improvedRecipe.testingRecipe.granules.reduce((sum: number, g: any) => sum + g.drops, 0) * 0.1).toFixed(1)}g
+                          {calculateTotalWeight(detailRecipe.improvedRecipe.testingRecipe.granules, selectedVolumeType)}g
                         </span>
                       </div>
                     </div>

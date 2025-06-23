@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     } = {
       perfumeId: originalPerfume.id,
       originalPerfumeName: originalPerfume.name,
-      retentionPercentage: clientFeedback.retentionPercentage || 50,
+      retentionPercentage: clientFeedback.retentionPercentage ?? 50,
       initialCategoryGraphData: initialCategoryGraphData,
       // 아래 필드들은 AI가 채우거나, feedbackForPrompt 구성 시 기본값/플레이스홀더로 초기화
       adjustedCategoryGraphData: [], 
@@ -117,14 +117,14 @@ export async function POST(request: NextRequest) {
             originalPerfumeId: originalPerfume.id,
             originalPerfumeName: originalPerfume.name,
             feedbackSummary: {
-              overallRating: clientFeedback.overallRating || 5, // 기본값 5
-              retentionPercentage: clientFeedback.retentionPercentage || 50, // 기본값 50
-              mainConcerns: clientFeedback.additionalComments || '피드백 없음' // 기본값
+              overallRating: clientFeedback.overallRating ?? 5, // 기본값 5
+              retentionPercentage: clientFeedback.retentionPercentage ?? 50, // 기본값 50
+              mainConcerns: clientFeedback.additionalComments ?? '피드백 없음' // 기본값
             },
             improvedRecipe: finalData,
             generatedAt: new Date().toISOString()
           };
-          await saveImprovedRecipe(userId, sessionId, recipeData);
+          await saveImprovedRecipe(userId, sessionId, recipeData, data.analysisId);
           console.log('Firebase에 최종 레시피 저장 완료');
         } catch (firebaseError) {
           console.error('Firebase 레시피 저장 오류:', firebaseError);
@@ -154,14 +154,14 @@ export async function POST(request: NextRequest) {
           originalPerfumeId: originalPerfume.id,
           originalPerfumeName: originalPerfume.name,
           feedbackSummary: {
-            overallRating: clientFeedback.overallRating || 5, // 기본값 5
-            retentionPercentage: clientFeedback.retentionPercentage || 50, // 기본값 50
-            mainConcerns: clientFeedback.additionalComments || '피드백 없음' // 기본값
+            overallRating: clientFeedback.overallRating ?? 5, // 기본값 5
+            retentionPercentage: clientFeedback.retentionPercentage ?? 50, // 기본값 50
+            mainConcerns: clientFeedback.additionalComments ?? '피드백 없음' // 기본값
           },
           improvedRecipe: result,
           generatedAt: new Date().toISOString()
         };
-        await saveImprovedRecipe(userId, sessionId, recipeData);
+        await saveImprovedRecipe(userId, sessionId, recipeData, data.analysisId);
         console.log('Firebase에 테스팅 레시피 저장 완료');
       } catch (firebaseError) {
         console.error('Firebase 레시피 저장 오류:', firebaseError);
@@ -222,8 +222,8 @@ async function callAndValidateWithRetry(
 
     let invalidGranuleInfo: { id: string, name: string, issue: string } | null = null;
     if (recipeSuggestion.testingRecipe && recipeSuggestion.testingRecipe.granules) {
-      if (recipeSuggestion.testingRecipe.granules.length === 0 && originalFeedbackForPrompt.retentionPercentage !== 100) {
-        // 100% 유지가 아닌데 추천 향료가 없는 경우 (AI가 빈 배열을 반환한 경우)
+      if (recipeSuggestion.testingRecipe.granules.length === 0 && originalFeedbackForPrompt.retentionPercentage !== 100 && originalFeedbackForPrompt.retentionPercentage !== 0) {
+        // 100% 유지도 0% 유지도 아닌데 추천 향료가 없는 경우 (AI가 빈 배열을 반환한 경우)
         invalidGranuleInfo = { id: 'N/A', name: 'N/A', issue: 'AI가 추천 향료(granules)를 생성하지 않았습니다.' };
       } else {
         const validPersonaIds = new Set(perfumePersonas.personas.map(p => p.id));
@@ -289,9 +289,7 @@ async function callGeminiAPI(prompt: string): Promise<string> {
         { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
       ]
     });
-    const generationConfig = { maxOutputTokens: 8192 }; // 필요시 토큰 수 조정
-
-    const result = await model.generateContent(prompt, generationConfig);
+    const result = await model.generateContent(prompt);
     const response = result.response;
     
     if (!response) {

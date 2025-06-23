@@ -94,11 +94,23 @@ export const useFeedbackForm = (perfumeId: string, userId?: string, sessionId?: 
       setLoading(false);
       setSuccess(true);
       
-      // 2. 커스터마이제이션 API 호출 (userId, sessionId 포함)
+      // 2. 커스터마이제이션 API 호출 (userId, sessionId, analysisId 포함)
       setCustomizationLoading(true);
       setError(null);
       
       try {
+        // localStorage에서 analysisId 가져오기
+        let analysisId = null;
+        try {
+          const storedResult = localStorage.getItem('analysisResult');
+          if (storedResult) {
+            const parsedResult = JSON.parse(storedResult);
+            analysisId = parsedResult.analysisId || null;
+          }
+        } catch (parseError) {
+          console.warn('분석 결과에서 analysisId를 가져올 수 없습니다:', parseError);
+        }
+        
         const customizeResponse = await fetch('/api/perfume/customize', {
           method: 'POST',
           headers: {
@@ -107,7 +119,8 @@ export const useFeedbackForm = (perfumeId: string, userId?: string, sessionId?: 
           body: JSON.stringify({
             feedback: submissionData,
             userId,
-            sessionId
+            sessionId,
+            analysisId
           }),
         });
         

@@ -51,12 +51,13 @@ export async function POST(request: NextRequest) {
     
     // 이미지 데이터 추출 및 Base64 변환
     const imageBuffer = await imageFile.arrayBuffer();
-    const imageBase64 = Buffer.from(imageBuffer).toString('base64');
     console.log(`이미지 변환 시작: ${imageFile.name} ${imageFile.type} ${imageFile.size}`);
     
-    // 이미지 URL 생성 (전체 base64 데이터 사용)
+    const imageBase64 = Buffer.from(imageBuffer).toString('base64');
+    
+    // 이미지 URL 생성 (변환된 이미지 사용)
     const imageUrl = `data:${imageFile.type};base64,${imageBase64}`;
-    console.log('이미지 URL 생성 완료');
+    console.log('이미지 URL 생성 완료, MIME 타입:', imageFile.type);
     
     // Gemini API를 이용한 이미지 분석
     const analysisResult = await analyzeIdolImage(imageBase64, {

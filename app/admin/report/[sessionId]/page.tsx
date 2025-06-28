@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import KeywordCloud from '../../../../components/KeywordCloud';
 import SimpleRadarChart from '../../../../components/chart/SimpleRadarChart';
+import heic2any from 'heic2any';
 
 interface SessionFullData {
   session: any;
@@ -131,6 +132,132 @@ const NotebookElement: React.FC<NotebookElementProps> = ({
   );
 };
 
+// HEIC 이미지를 JPEG로 변환해서 표시하는 컴포넌트
+const HeicImageConverter: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
+  const [convertedUrl, setConvertedUrl] = useState<string | null>(null);
+  const [isConverting, setIsConverting] = useState(false);
+  const [conversionError, setConversionError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const convertHeicImage = async () => {
+      // HEIC 파일인지 확인
+      const isHeicImage = imageUrl.includes('data:image/heic') || 
+                         imageUrl.includes('data:image/heif');
+      
+      if (!isHeicImage) {
+        // HEIC가 아니면 원본 URL 그대로 사용
+        setConvertedUrl(imageUrl);
+        return;
+      }
+
+      try {
+        setIsConverting(true);
+        setConversionError(null);
+        console.log('🔄 관리자 페이지에서 HEIC → JPEG 변환 시작...');
+
+        // base64 데이터를 Blob으로 변환
+        const base64Data = imageUrl.split(',')[1];
+        const binaryString = atob(base64Data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const heicBlob = new Blob([bytes], { type: 'image/heic' });
+
+        // HEIC를 JPEG로 변환
+        const convertedBlob = await heic2any({
+          blob: heicBlob,
+          toType: 'image/jpeg',
+          quality: 0.9
+        });
+
+        // 변환된 Blob을 URL로 생성
+        const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+        const jpegUrl = URL.createObjectURL(blob);
+        
+        setConvertedUrl(jpegUrl);
+        console.log('✅ HEIC → JPEG 변환 완료!');
+
+      } catch (error) {
+        console.error('❌ HEIC 변환 실패:', error);
+        setConversionError(`변환 실패: ${error}`);
+      } finally {
+        setIsConverting(false);
+      }
+    };
+
+    convertHeicImage();
+
+    // cleanup: 컴포넌트 언마운트 시 Object URL 해제
+    return () => {
+      if (convertedUrl && convertedUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(convertedUrl);
+      }
+    };
+  }, [imageUrl]);
+
+  if (isConverting) {
+    return (
+      <div className="converting-notice" style={{
+        padding: '40px',
+        textAlign: 'center',
+        backgroundColor: '#e3f2fd',
+        border: '2px solid #2196f3',
+        borderRadius: '8px',
+        color: '#1976d2'
+      }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔄</div>
+        <h3 style={{ margin: '0 0 8px 0' }}>HEIC 이미지 변환 중...</h3>
+        <p style={{ margin: '0', fontSize: '14px' }}>
+          잠시만 기다려주세요. HEIC 이미지를 JPEG로 변환하고 있습니다.
+        </p>
+      </div>
+    );
+  }
+
+  if (conversionError) {
+    return (
+      <div className="conversion-error" style={{
+        padding: '40px',
+        textAlign: 'center',
+        backgroundColor: '#ffebee',
+        border: '2px dashed #f44336',
+        borderRadius: '8px',
+        color: '#c62828'
+      }}>
+        <div style={{ fontSize: '48px', marginBottom: '16px' }}>❌</div>
+        <h3 style={{ margin: '0 0 8px 0' }}>변환 실패</h3>
+        <p style={{ margin: '0', fontSize: '14px' }}>
+          HEIC 이미지 변환에 실패했습니다.<br/>
+          <small>{conversionError}</small>
+        </p>
+      </div>
+    );
+  }
+
+  if (!convertedUrl) {
+    return (
+      <div className="image-placeholder">
+        🖼️ 이미지 로딩 중...
+      </div>
+    );
+  }
+
+  return (
+    <img 
+      src={convertedUrl} 
+      alt="변환된 이미지" 
+      className="main-image"
+      onError={(e) => {
+        console.error('🖼️ 변환된 이미지 로드 오류');
+      }}
+      onLoad={() => {
+        console.log('🖼️ 변환된 이미지 로드 성공');
+      }}
+    />
+  );
+};
+
 export default function ReportPage() {
   const params = useParams();
   const [sessionData, setSessionData] = useState<SessionFullData | null>(null);
@@ -142,6 +269,18 @@ export default function ReportPage() {
   useEffect(() => {
     loadSessionData();
   }, []);
+
+  // 개발 모드에서만 이미지 디버깅 정보 출력
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && sessionData?.session) {
+      const session = sessionData.session;
+      console.log('🖼️ 이미지 상태:', {
+        hasImageUrl: !!session?.imageUrl,
+        imageUrlType: typeof session?.imageUrl,
+        isHeic: session?.imageUrl?.includes('image/heic') || false
+      });
+    }
+  }, [sessionData]);
 
   const loadSessionData = async () => {
     try {
@@ -794,17 +933,13 @@ export default function ReportPage() {
       {/* 배경 위에 컴포넌트들 배치 */}
       <div className="notebook-container">
         <div className="notebook-wrapper">
-          {/* 새로운 시스템으로 이미지 영역 배치 */}
+          {/* IMAGE 영역 */}
           <NotebookElement elementKey="image" className="image-area">
-            {session?.imageUrl ? (
-              <img 
-                src={session.imageUrl} 
-                alt="이미지" 
-                className="main-image"
-              />
+            {session.imageUrl ? (
+              <HeicImageConverter imageUrl={session.imageUrl} />
             ) : (
               <div className="image-placeholder">
-                🖼️
+                🖼️ 이미지가 없습니다
               </div>
             )}
           </NotebookElement>

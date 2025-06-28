@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import PersonalImageUpload from '../PersonalImageUpload';
+import heic2any from 'heic2any';
 
 // 개인 정보 인터페이스
 interface PersonalInfo {
@@ -81,12 +82,66 @@ export default function PersonalInfoForm() {
   };
 
   // 이미지 업로드 핸들러
-  const handleImageUpload = (file: File) => {
-    setPersonalInfo(prev => ({ ...prev, image: file }));
+  const handleImageUpload = async (file: File) => {
+    // HEIC 파일 감지
+    const isHeic = file.type === 'image/heic' || 
+                   file.type === 'image/heif' ||
+                   file.name.toLowerCase().endsWith('.heic') ||
+                   file.name.toLowerCase().endsWith('.heif');
+    
+    let processedFile = file;
+    
+    // HEIC 파일인 경우 JPEG로 변환 시도
+    if (isHeic) {
+      try {
+        console.log('HEIC 파일 감지, JPEG로 변환 시도...');
+        processedFile = await convertHeicToJpeg(file);
+        console.log('HEIC → JPEG 변환 완료');
+      } catch (error) {
+        console.error('HEIC 변환 실패:', error);
+        alert('HEIC 파일 변환에 실패했습니다. 다른 형식의 이미지를 사용해주세요.');
+        return;
+      }
+    }
+    
+    setPersonalInfo(prev => ({ ...prev, image: processedFile }));
     
     // 이미지 크기 확인 및 경고
-    if (file.size > 2 * 1024 * 1024) { // 2MB 초과
+    if (processedFile.size > 2 * 1024 * 1024) { // 2MB 초과
       alert('이미지 크기가 큽니다. 분석에 시간이 오래 걸릴 수 있습니다.');
+    }
+  };
+
+  // HEIC를 JPEG로 변환하는 함수 (heic2any 사용)
+  const convertHeicToJpeg = async (file: File): Promise<File> => {
+    try {
+      console.log('heic2any를 사용한 HEIC → JPEG 변환 시작...');
+      
+      const convertedBlob = await heic2any({
+        blob: file,
+        toType: 'image/jpeg',
+        quality: 0.9
+      });
+      
+      // 변환 결과가 배열일 수 있으므로 첫 번째 요소 사용
+      const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+      
+      // Blob을 File로 변환
+      const convertedFile = new File(
+        [blob], 
+        file.name.replace(/\.(heic|heif)$/i, '.jpg'), 
+        {
+          type: 'image/jpeg',
+          lastModified: Date.now(),
+        }
+      );
+      
+      console.log('HEIC → JPEG 변환 성공:', convertedFile.size, 'bytes');
+      return convertedFile;
+      
+    } catch (error) {
+      console.error('heic2any 변환 실패:', error);
+      throw new Error(`HEIC 파일 변환에 실패했습니다: ${error}`);
     }
   };
 

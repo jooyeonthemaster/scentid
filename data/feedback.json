@@ -3505,5 +3505,71 @@
     "submittedAt": "2025-06-23T12:28:25.272Z",
     "id": "feedback_1750681705367_5t522rl",
     "timestamp": "2025-06-23T12:28:25.367Z"
+  },
+  {
+    "perfumeId": "YJ-8213431",
+    "retentionPercentage": 40,
+    "categoryPreferences": {
+      "citrus": "increase",
+      "floral": "increase",
+      "woody": "maintain",
+      "musky": "maintain",
+      "fruity": "maintain",
+      "spicy": "maintain"
+    },
+    "userCharacteristics": {
+      "weight": "medium",
+      "sweetness": "medium",
+      "freshness": "medium",
+      "uniqueness": "medium"
+    },
+    "specificScents": [
+      {
+        "id": "CR-3706221",
+        "name": "캐럿",
+        "ratio": 50,
+        "action": "add"
+      }
+    ],
+    "notes": "",
+    "submittedAt": "2025-07-16T05:25:35.603Z",
+    "id": "feedback_1752643536360_7usuvcv",
+    "timestamp": "2025-07-16T05:25:36.360Z"
+  },
+  {
+    "perfumeId": "YJ-8213431",
+    "retentionPercentage": 60,
+    "categoryPreferences": {
+      "citrus": "increase",
+      "floral": "maintain",
+      "woody": "maintain",
+      "musky": "maintain",
+      "fruity": "increase",
+      "spicy": "maintain"
+    },
+    "userCharacteristics": {
+      "weight": "medium",
+      "sweetness": "medium",
+      "freshness": "medium",
+      "uniqueness": "medium"
+    },
+    "specificScents": [
+      {
+        "id": "TL-2810221",
+        "name": "튤립",
+        "ratio": 50,
+        "action": "add"
+      },
+      {
+        "id": "CR-3706221",
+        "name": "캐럿",
+        "ratio": 50,
+        "action": "add"
+      }
+    ],
+    "notes": "",
+    "submittedAt": "2025-07-16T05:27:55.379Z",
+    "id": "feedback_1752643675473_j2yll87",
+    "timestamp": "2025-07-16T05:27:55.473Z"
   }
 ]

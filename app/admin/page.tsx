@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -20,26 +20,70 @@ interface SessionData {
   completionStatus: string;
 }
 
+interface AdminResponse {
+  success: boolean;
+  sessions: SessionData[];
+  totalSessions: number;
+  hasMore: boolean;
+  lastKey: string | null;
+  cached: boolean;
+  error?: string;
+}
+
 export default function AdminPage() {
   const [sessions, setSessions] = useState<SessionData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [lastKey, setLastKey] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalSessions, setTotalSessions] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // 데이터 로드
+  // 초기 데이터 로드
   useEffect(() => {
-    loadSessions();
+    loadSessions(false);
   }, []);
 
-  const loadSessions = async () => {
+  // 세션 데이터 로드 함수 (최적화됨)
+  const loadSessions = useCallback(async (isLoadMore = false, forceRefresh = false) => {
     try {
-      setLoading(true);
-      const response = await fetch('/api/admin');
-      const data = await response.json();
+      if (isLoadMore) {
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        if (forceRefresh) {
+          setIsRefreshing(true);
+        }
+      }
+
+      const params = new URLSearchParams({
+        limit: '20', // 페이지당 20개로 제한
+        ...(isLoadMore && lastKey ? { lastKey } : {}),
+        ...(forceRefresh ? { refresh: 'true' } : {})
+      });
+
+      console.log('📊 API 호출:', { isLoadMore, lastKey, forceRefresh });
+
+      const response = await fetch(`/api/admin?${params.toString()}`);
+      const data: AdminResponse = await response.json();
       
       if (data.success) {
-        setSessions(data.sessions);
+        if (isLoadMore) {
+          // 더 많은 데이터 추가
+          setSessions(prev => [...prev, ...data.sessions]);
+        } else {
+          // 새로운 데이터로 교체
+          setSessions(data.sessions);
+        }
+        
+        setLastKey(data.lastKey);
+        setHasMore(data.hasMore);
+        setTotalSessions(data.totalSessions);
+        
+        console.log(`📊 세션 로드 완료: ${data.sessions.length}개 (캐시: ${data.cached})`);
       } else {
         setError(data.error || '데이터 로드 실패');
       }
@@ -48,8 +92,35 @@ export default function AdminPage() {
       console.error('Admin 데이터 로드 오류:', err);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
+      setIsRefreshing(false);
     }
-  };
+  }, [lastKey]);
+
+  // 더 많은 데이터 로드
+  const loadMoreSessions = useCallback(() => {
+    if (!loadingMore && hasMore) {
+      loadSessions(true);
+    }
+  }, [loadSessions, loadingMore, hasMore]);
+
+  // 새로고침
+  const refreshSessions = useCallback(() => {
+    setLastKey(null);
+    setHasMore(true);
+    loadSessions(false, true);
+  }, [loadSessions]);
+
+  // 캐시 초기화
+  const clearCache = useCallback(async () => {
+    try {
+      await fetch('/api/admin', { method: 'DELETE' });
+      refreshSessions();
+      console.log('📊 캐시 초기화 완료');
+    } catch (err) {
+      console.error('캐시 초기화 오류:', err);
+    }
+  }, [refreshSessions]);
 
   // 시간 포맷팅
   const formatDate = (timestamp: any) => {
@@ -98,7 +169,7 @@ export default function AdminPage() {
     return matchesSearch && matchesStatus;
   });
 
-  if (loading) {
+  if (loading && sessions.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -109,14 +180,14 @@ export default function AdminPage() {
     );
   }
 
-  if (error) {
+  if (error && sessions.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-600 text-xl mb-4">❌ 오류 발생</div>
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
-            onClick={loadSessions}
+            onClick={() => loadSessions(false)}
             className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700"
           >
             다시 시도
@@ -136,8 +207,32 @@ export default function AdminPage() {
               <h1 className="text-2xl font-bold text-gray-900">AC'SCENT 관리자</h1>
               <p className="text-gray-600">향수 분석 내역 관리</p>
             </div>
-            <div className="text-sm text-gray-500">
-              총 {sessions.length}개 세션
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-500">
+                총 {totalSessions}개 세션 (로드됨: {sessions.length}개)
+              </div>
+              <button
+                onClick={refreshSessions}
+                disabled={isRefreshing}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+              >
+                {isRefreshing ? (
+                  <>
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                    새로고침 중...
+                  </>
+                ) : (
+                  <>🔄 새로고침</>
+                )}
+              </button>
+              {process.env.NODE_ENV === 'development' && (
+                <button
+                  onClick={clearCache}
+                  className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+                >
+                  🗑️ 캐시 초기화
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -268,12 +363,32 @@ export default function AdminPage() {
               </tbody>
             </table>
             
-            {filteredSessions.length === 0 && (
+            {filteredSessions.length === 0 && !loading && (
               <div className="text-center py-12">
                 <div className="text-gray-500">검색 결과가 없습니다.</div>
               </div>
             )}
           </div>
+
+          {/* 더 보기 버튼 */}
+          {hasMore && filteredSessions.length > 0 && (
+            <div className="px-6 py-4 border-t border-gray-200 text-center">
+              <button
+                onClick={loadMoreSessions}
+                disabled={loadingMore}
+                className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 disabled:opacity-50 flex items-center gap-2 mx-auto"
+              >
+                {loadingMore ? (
+                  <>
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                    로딩 중...
+                  </>
+                ) : (
+                  <>더 보기 ({totalSessions - sessions.length}개 남음)</>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

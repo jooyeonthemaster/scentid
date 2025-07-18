@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import KeywordCloud from '../../../../components/KeywordCloud';
 import SimpleRadarChart from '../../../../components/chart/SimpleRadarChart';
-import heic2any from 'heic2any';
 
 interface SessionFullData {
   session: any;
@@ -163,6 +162,9 @@ const HeicImageConverter: React.FC<{ imageUrl: string }> = ({ imageUrl }) => {
           bytes[i] = binaryString.charCodeAt(i);
         }
         const heicBlob = new Blob([bytes], { type: 'image/heic' });
+
+        // Dynamic import로 heic2any 로드 (클라이언트에서만)
+        const { default: heic2any } = await import('heic2any');
 
         // HEIC를 JPEG로 변환
         const convertedBlob = await heic2any({

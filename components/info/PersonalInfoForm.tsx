@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import PersonalImageUpload from '../PersonalImageUpload';
-import heic2any from 'heic2any';
 
 // 개인 정보 인터페이스
 interface PersonalInfo {
@@ -15,6 +14,10 @@ interface PersonalInfo {
   personality: string[];
   charms: string;
   image?: File;
+}
+
+interface PersonalInfoFormProps {
+  onComplete: (info: PersonalInfo) => void;
 }
 
 export default function PersonalInfoForm() {
@@ -116,6 +119,9 @@ export default function PersonalInfoForm() {
   const convertHeicToJpeg = async (file: File): Promise<File> => {
     try {
       console.log('heic2any를 사용한 HEIC → JPEG 변환 시작...');
+      
+      // Dynamic import로 heic2any 로드 (클라이언트에서만)
+      const { default: heic2any } = await import('heic2any');
       
       const convertedBlob = await heic2any({
         blob: file,

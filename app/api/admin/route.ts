@@ -1,20 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllUserData, getSessionFullData } from '../../../lib/firebaseApi';
+import { getAllUserData, getSessionFullData, getCachedUserSessionsList, clearSessionCache } from '../../../lib/firebaseApi';
 
 /**
  * 관리자용 API 엔드포인트
  * 
- * GET: 모든 사용자 데이터 조회 (분석 내역 목록)
+ * GET: 모든 사용자 데이터 조회 (분석 내역 목록) - 최적화됨
  * POST: 특정 세션의 상세 데이터 조회 (보고서용)
+ * DELETE: 캐시 초기화 (개발용)
  */
 
-// 모든 사용자 분석 세션 목록 조회 (관리자용)
-export async function GET() {
+// 모든 사용자 분석 세션 목록 조회 (관리자용) - 최적화됨
+export async function GET(request: NextRequest) {
   try {
-    console.log('관리자 API: 모든 사용자 데이터 조회 시작');
+    console.log('관리자 API: 최적화된 사용자 데이터 조회 시작');
     
-    const allData = await getAllUserData();
-    const sessionsList: any[] = [];
+    // 쿼리 파라미터에서 페이지네이션 정보 추출
+    const { searchParams } = new URL(request.url);
+    const limit = parseInt(searchParams.get('limit') || '50');
+    const lastKeyParam = searchParams.get('lastKey');
+    const lastKey = lastKeyParam === 'null' ? null : lastKeyParam;
+    const forceRefresh = searchParams.get('refresh') === 'true';
+    
+    console.log('📊 조회 파라미터:', { limit, lastKey, forceRefresh });
+    
+    // 최적화된 캐시된 함수 사용 (타입 문제 해결을 위한 캐스팅)
+    const result = await (getCachedUserSessionsList as any)(limit, lastKey, forceRefresh);
     
     // 안전한 문자열 변환 함수
     const safeStringify = (value: any): string => {
@@ -25,78 +35,34 @@ export async function GET() {
       return String(value || '');
     };
     
-    // 모든 사용자의 세션 데이터를 수집
-    Object.keys(allData).forEach(userId => {
-      const userData = allData[userId];
-      if (userData.perfumeSessions) {
-        Object.keys(userData.perfumeSessions).forEach(sessionId => {
-          const session = userData.perfumeSessions[sessionId];
-          
-          // 타임스탬프 디버깅
-          console.log(`세션 ${sessionId} 타임스탬프 디버깅:`, {
-            createdAt: session.createdAt,
-            createdAtType: typeof session.createdAt,
-            updatedAt: session.updatedAt,
-            updatedAtType: typeof session.updatedAt
-          });
-          
-          // 비밀번호 포맷팅 (4자리 숫자)
-          const formatPassword = (password: string): string => {
-            return password || ''; // 관리자 페이지에서는 비밀번호를 그대로 표시
-          };
-          
-          // 안전한 최애 이름 추출
-          let idolName = '분석 중';
-          if (session.imageAnalysis?.matchingPerfumes?.[0]?.name) {
-            idolName = session.imageAnalysis.matchingPerfumes[0].name;
-          } else if (session.imageAnalysis?.analysis) {
-            // analysis가 객체인 경우 안전하게 처리
-            idolName = safeStringify(session.imageAnalysis.analysis).substring(0, 50) + '...';
-          }
-          
-          // createdAt이 없으면 updatedAt 사용, 둘 다 없으면 현재 시간 사용
-          const effectiveCreatedAt = session.createdAt || session.updatedAt || Date.now();
-          
-          sessionsList.push({
-            userId: userId,
-            sessionId: sessionId,
-            phoneNumber: formatPassword(userId),
-            createdAt: effectiveCreatedAt,
-            updatedAt: session.updatedAt || effectiveCreatedAt,
-            status: session.status || 'unknown',
-            customerName: session.customerName || '알 수 없음',
-            idolName: idolName,
-            hasImageAnalysis: !!session.imageAnalysis,
-            hasFeedback: !!session.feedback,
-            hasRecipe: !!session.improvedRecipe,
-            hasConfirmation: !!session.confirmation,
-            
-            // 분석 단계별 상태 표시
-            completionStatus: (() => {
-              if (session.confirmation) return '완료';
-              if (session.improvedRecipe) return '레시피 생성';
-              if (session.feedback) return '피드백 완료';
-              if (session.imageAnalysis) return '분석 완료';
-              return '진행 중';
-            })()
-          });
-        });
-      }
+    // 비밀번호 포맷팅 (4자리 숫자)
+    const formatPassword = (password: string): string => {
+      return password || ''; // 관리자 페이지에서는 비밀번호를 그대로 표시
+    };
+    
+    // 각 세션에 최애 이름 추가 (기존 로직 유지)
+    const enhancedSessions = result.sessions.map((session: any) => {
+      // 안전한 최애 이름 추출
+      let idolName = '분석 중';
+      // 상세 분석 데이터가 필요한 경우에만 별도 조회하도록 변경 필요
+      // 현재는 기본값으로 처리
+      
+      return {
+        ...session,
+        phoneNumber: formatPassword(session.userId),
+        idolName: idolName, // 목록에서는 간단히 처리
+      };
     });
     
-    // 최신순으로 정렬
-    sessionsList.sort((a, b) => {
-      const timeA = a.updatedAt || a.createdAt || 0;
-      const timeB = b.updatedAt || b.createdAt || 0;
-      return timeB - timeA;
-    });
-    
-    console.log(`관리자 API: 총 ${sessionsList.length}개 세션 조회 완료`);
+    console.log(`관리자 API: ${enhancedSessions.length}개 세션 조회 완료 (전체: ${result.total})`);
     
     return NextResponse.json({
       success: true,
-      totalSessions: sessionsList.length,
-      sessions: sessionsList
+      totalSessions: result.total,
+      sessions: enhancedSessions,
+      hasMore: result.hasMore,
+      lastKey: result.lastKey,
+      cached: !forceRefresh
     });
     
   } catch (error) {
@@ -105,6 +71,24 @@ export async function GET() {
       success: false,
       error: '데이터 조회 중 오류가 발생했습니다.',
       details: error instanceof Error ? error.message : '알 수 없는 오류'
+    }, { status: 500 });
+  }
+}
+
+// 캐시 초기화 (개발용)
+export async function DELETE() {
+  try {
+    clearSessionCache();
+    
+    return NextResponse.json({
+      success: true,
+      message: '캐시가 초기화되었습니다.'
+    });
+  } catch (error) {
+    console.error('캐시 초기화 오류:', error);
+    return NextResponse.json({
+      success: false,
+      error: '캐시 초기화 중 오류가 발생했습니다.'
     }, { status: 500 });
   }
 }

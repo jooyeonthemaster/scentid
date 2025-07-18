@@ -1,0 +1,24 @@
+# Firebase 설정 (기존)
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key_here
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=https://your_project-default-rtdb.firebaseio.com/
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=123456789
+NEXT_PUBLIC_FIREBASE_APP_ID=1:123456789:web:abcdef123456
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-ABCDEF1234
+
+# 파이어베이스 최적화 설정 (새로 추가)
+NEXT_PUBLIC_USE_FIREBASE_EMULATOR=false
+NEXT_PUBLIC_FIREBASE_CACHE_SIZE=10485760
+NEXT_PUBLIC_FIREBASE_OFFLINE_PERSISTENCE=true
+
+# 기타 설정 (기존)
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your_nextauth_secret_here
+
+# Google AI API (기존)
+GOOGLE_API_KEY=your_google_api_key_here
+
+# Perplexity API (기존)
+PERPLEXITY_API_KEY=your_perplexity_api_key_here 

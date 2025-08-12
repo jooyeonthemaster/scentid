@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSessionRecipes, getAnalysisRecipes, getRecipeById, setSessionActiveRecipe, toggleRecipeBookmark } from '../../../lib/firebaseApi';
+import { getSessionRecipes, getAnalysisRecipes, getRecipeById, setSessionActiveRecipe, toggleRecipeBookmark } from '../../../lib/firestoreApi';
 
 // GET: 이미지 분석별 레시피 히스토리 조회
 export async function GET(request: NextRequest) {

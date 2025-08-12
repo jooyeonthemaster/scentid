@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '../../../../lib/firebase';
-import { ref, update } from 'firebase/database';
+import { firestore } from '../../../../lib/firebase';
+import { doc, updateDoc } from 'firebase/firestore';
 
 /**
  * AI 보고서 캐시 API - 생성된 보고서를 Firebase에 저장
@@ -20,9 +20,9 @@ export async function POST(request: NextRequest) {
 
     console.log('AI 보고서 캐시 저장 시작:', { userId, sessionId });
 
-    // Firebase에 생성된 보고서 저장
-    const sessionRef = ref(db, `users/${userId}/perfumeSessions/${sessionId}`);
-    await update(sessionRef, {
+    // Firestore에 생성된 보고서 저장
+    const sessionRef = doc(firestore, 'users', userId, 'perfumeSessions', sessionId);
+    await updateDoc(sessionRef, {
       generatedReport: generatedReport,
       reportGeneratedAt: Date.now(),
       updatedAt: Date.now()

@@ -3601,5 +3601,35 @@
     "submittedAt": "2025-08-12T11:21:53.958Z",
     "id": "feedback_1754997714732_o35l2dx",
     "timestamp": "2025-08-12T11:21:54.732Z"
+  },
+  {
+    "perfumeId": "AC'SCENT 20",
+    "retentionPercentage": 80,
+    "categoryPreferences": {
+      "citrus": "increase",
+      "floral": "maintain",
+      "woody": "maintain",
+      "musky": "maintain",
+      "fruity": "maintain",
+      "spicy": "increase"
+    },
+    "userCharacteristics": {
+      "weight": "medium",
+      "sweetness": "medium",
+      "freshness": "medium",
+      "uniqueness": "medium"
+    },
+    "specificScents": [
+      {
+        "id": "AC'SCENT 03",
+        "name": "스트로베리",
+        "ratio": 50,
+        "action": "add"
+      }
+    ],
+    "notes": "",
+    "submittedAt": "2025-08-12T12:53:16.291Z",
+    "id": "feedback_1755003197096_y0tmy52",
+    "timestamp": "2025-08-12T12:53:17.096Z"
   }
 ]

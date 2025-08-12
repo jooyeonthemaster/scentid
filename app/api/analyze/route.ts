@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { analyzeIdolImage } from '../../utils/gemini';
 import { findMatchingPerfumes } from '../../utils/perfumeUtils';
 import { ImageAnalysisResult } from '../../types/perfume';
-import { saveImageAnalysisWithLink } from '../../../lib/firebaseApi';
+import { saveImageAnalysisWithLink } from '../../../lib/firestoreApi';
 
 /**
  * 이미지 분석 API 엔드포인트

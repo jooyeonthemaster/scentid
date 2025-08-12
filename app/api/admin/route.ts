@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllUserData, getSessionFullData, getCachedUserSessionsList, clearSessionCache, cleanupOldSessions } from '../../../lib/firebaseApi';
+import { getAllUserData, getSessionFullData, getCachedUserSessionsList, clearSessionCache, cleanupOldSessions } from '../../../lib/firestoreApi';
 
 /**
  * 관리자용 API 엔드포인트

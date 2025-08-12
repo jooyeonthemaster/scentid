@@ -1,5 +1,5 @@
 /**
- * 🗑️ Firebase 데이터베이스 정리 스크립트
+ * 🗑️ Firestore 데이터베이스 정리 스크립트
  * 
  * 사용법:
  * 1. 시뮬레이션 (안전): node scripts/cleanup-database.js --dry-run
@@ -14,7 +14,7 @@ const API_BASE_URL = process.env.NODE_ENV === 'production'
 
 async function cleanupDatabase(keepLatestCount = 30, dryRun = true) {
   try {
-    console.log('🗑️ 데이터베이스 정리 시작...');
+    console.log('🗑️ Firestore 데이터베이스 정리 시작...');
     console.log(`📊 설정: 최신 ${keepLatestCount}개 유지, 시뮬레이션 모드: ${dryRun}`);
     
     const response = await fetch(`${API_BASE_URL}/api/admin`, {

@@ -3,21 +3,34 @@ import perfumePersonasData from '@/app/data/perfumePersonas';
 
 // 향료 ID에서 카테고리 추정
 export const getScentCategory = (id: string): string => {
-  // ID 형식에 따른 카테고리 매핑
+  // AC'SCENT 형식의 경우 persona 데이터를 사용
+  if (id.startsWith("AC'SCENT")) {
+    const persona = perfumePersonasData.personas.find(p => p.id === id);
+    if (persona && persona.categories) {
+      const categories = persona.categories as ScentCategoryScores;
+      let mainCategoryKey: keyof ScentCategoryScores | undefined = undefined;
+      let maxScore = -1;
+
+      (Object.keys(categories) as Array<keyof ScentCategoryScores>).forEach(categoryKey => {
+        if (categories[categoryKey] > maxScore) {
+          maxScore = categories[categoryKey];
+          mainCategoryKey = categoryKey;
+        }
+      });
+
+      if (mainCategoryKey) {
+        return mainCategoryKey;
+      }
+    }
+  }
+  
+  // 기존 ID 형식에 따른 카테고리 매핑 (호환성을 위해 유지)
   if (id.startsWith('CI-')) return 'citrus';
   if (id.startsWith('FL-')) return 'floral';
   if (id.startsWith('WD-')) return 'woody';
   if (id.startsWith('MU-')) return 'musky';
   if (id.startsWith('FR-')) return 'fruity';
   if (id.startsWith('SP-')) return 'spicy';
-  
-  // ID 패턴이 명확하지 않은 경우, 통상적인 향료 코드 패턴 확인
-  if (id.startsWith('BK-')) return 'woody';
-  if (id.startsWith('MD-')) return 'citrus';
-  if (id.startsWith('RS-')) return 'floral';
-  if (id.startsWith('AM-')) return 'musky';
-  if (id.startsWith('PK-')) return 'spicy';
-  if (id.startsWith('BE-')) return 'fruity';
   
   const idLower = id.toLowerCase();
   if (idLower.includes('wood') || idLower.includes('sand')) return 'woody';
@@ -71,18 +84,13 @@ export const getScentMainCategory = (id: string): string => {
     }
   }
 
+  // AC'SCENT 형식의 경우는 이미 위에서 처리됨
   if (id.startsWith('CI-')) return '시트러스';
   if (id.startsWith('FL-')) return '플로럴';
   if (id.startsWith('WD-')) return '우디';
   if (id.startsWith('MU-')) return '머스크';
   if (id.startsWith('FR-')) return '프루티';
   if (id.startsWith('SP-')) return '스파이시';
-  if (id.startsWith('BK-')) return '우디';
-  if (id.startsWith('MD-')) return '시트러스';
-  if (id.startsWith('RS-')) return '플로럴';
-  if (id.startsWith('AM-')) return '머스크';
-  if (id.startsWith('PK-')) return '스파이시';
-  if (id.startsWith('BE-')) return '프루티';
   
   return '기타';
 };

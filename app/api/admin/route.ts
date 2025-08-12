@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllUserData, getSessionFullData, getCachedUserSessionsList, clearSessionCache } from '../../../lib/firebaseApi';
+import { getAllUserData, getSessionFullData, getCachedUserSessionsList, clearSessionCache, cleanupOldSessions } from '../../../lib/firebaseApi';
 
 /**
  * 관리자용 API 엔드포인트
  * 
  * GET: 모든 사용자 데이터 조회 (분석 내역 목록) - 최적화됨
- * POST: 특정 세션의 상세 데이터 조회 (보고서용)
+ * POST: 특정 세션의 상세 데이터 조회 (보고서용) 또는 데이터 정리
  * DELETE: 캐시 초기화 (개발용)
  */
 
@@ -25,6 +25,16 @@ export async function GET(request: NextRequest) {
     
     // 최적화된 캐시된 함수 사용 (타입 문제 해결을 위한 캐스팅)
     const result = await (getCachedUserSessionsList as any)(limit, lastKey, forceRefresh);
+    
+    // Firebase 조회 타임아웃 에러 처리
+    if (result.error) {
+      console.warn('📊 Firebase 조회 에러:', result.error);
+      return NextResponse.json({
+        success: false,
+        error: result.error,
+        details: 'Firebase 연결 문제로 데이터를 불러올 수 없습니다.'
+      }, { status: 503 }); // Service Unavailable
+    }
     
     // 안전한 문자열 변환 함수
     const safeStringify = (value: any): string => {
@@ -93,12 +103,29 @@ export async function DELETE() {
   }
 }
 
-// 특정 세션의 상세 데이터 조회 (보고서용)
+// 특정 세션의 상세 데이터 조회 (보고서용) 또는 데이터 정리
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { userId, sessionId } = body;
+    const { action, userId, sessionId, keepLatestCount, dryRun } = body;
     
+    // 🗑️ 데이터 정리 액션
+    if (action === 'cleanup') {
+      console.log(`🗑️ 관리자 API: 데이터 정리 요청 (최신 ${keepLatestCount || 30}개 유지, 시뮬레이션: ${dryRun !== false})`);
+      
+      const result = await cleanupOldSessions(
+        keepLatestCount || 30,
+        dryRun !== false // 기본값은 시뮬레이션 모드
+      );
+      
+      return NextResponse.json({
+        success: true,
+        action: 'cleanup',
+        data: result
+      });
+    }
+    
+    // 기존 세션 상세 조회 로직
     console.log(`관리자 API: 세션 상세 조회 - ${userId}/${sessionId}`);
     
     if (!userId || !sessionId) {
@@ -131,10 +158,10 @@ export async function POST(request: NextRequest) {
     });
     
   } catch (error) {
-    console.error('세션 상세 데이터 조회 오류:', error);
+    console.error('관리자 API 오류:', error);
     return NextResponse.json({
       success: false,
-      error: '세션 데이터 조회 중 오류가 발생했습니다.',
+      error: '요청 처리 중 오류가 발생했습니다.',
       details: error instanceof Error ? error.message : '알 수 없는 오류'
     }, { status: 500 });
   }

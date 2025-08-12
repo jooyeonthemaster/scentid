@@ -17,7 +17,12 @@ export const findScentNameById = (id: string): string | undefined => {
 
 // 향료 코드나 이름을 ID 형식으로 변환하는 함수
 export const formatScentCode = (nameOrId: string): string => {
-  // ID 패턴 체크 (XX-YYYYYYY 형식)
+  // AC'SCENT 패턴 체크 (AC'SCENT XX 형식)
+  if (nameOrId && /^AC'SCENT \d{2}$/.test(nameOrId)) {
+    return nameOrId; // 이미 ID 형식이면 그대로 반환
+  }
+  
+  // 기존 형식 체크 (XX-YYYYYYY 형식) - 호환성을 위해 유지
   if (nameOrId && /^[A-Z]{2}-\d+$/.test(nameOrId)) {
     return nameOrId; // 이미 ID 형식이면 그대로 반환
   }
@@ -32,8 +37,13 @@ export const formatScentDisplay = (nameOrId: string): string => {
   let id = nameOrId;
   let name = nameOrId;
   
-  // ID 형식인 경우
-  if (nameOrId && /^[A-Z]{2}-\d+$/.test(nameOrId)) {
+  // AC'SCENT 형식인 경우
+  if (nameOrId && /^AC'SCENT \d{2}$/.test(nameOrId)) {
+    id = nameOrId;
+    name = findScentNameById(id) || id;
+  }
+  // 기존 ID 형식인 경우 (호환성을 위해 유지)
+  else if (nameOrId && /^[A-Z]{2}-\d+$/.test(nameOrId)) {
     id = nameOrId;
     name = findScentNameById(id) || id;
   } 

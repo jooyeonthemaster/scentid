@@ -41,6 +41,9 @@ export default function AdminPage() {
   const [hasMore, setHasMore] = useState(true);
   const [totalSessions, setTotalSessions] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showCleanupModal, setShowCleanupModal] = useState(false);
+  const [cleanupResult, setCleanupResult] = useState<any>(null);
+  const [isCleaningUp, setIsCleaningUp] = useState(false);
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -119,6 +122,48 @@ export default function AdminPage() {
       console.log('📊 캐시 초기화 완료');
     } catch (err) {
       console.error('캐시 초기화 오류:', err);
+    }
+  }, [refreshSessions]);
+
+  // 🗑️ 데이터 정리 함수
+  const handleCleanup = useCallback(async (dryRun = true, keepCount = 30) => {
+    try {
+      setIsCleaningUp(true);
+      console.log(`🗑️ 데이터 정리 ${dryRun ? '시뮬레이션' : '실행'} 시작...`);
+      
+      const response = await fetch('/api/admin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'cleanup',
+          keepLatestCount: keepCount,
+          dryRun: dryRun
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setCleanupResult(result.data);
+        console.log('🗑️ 데이터 정리 완료:', result.data);
+        
+        // 실제 삭제가 완료되면 세션 목록 새로고침
+        if (!dryRun) {
+          setTimeout(() => {
+            refreshSessions();
+          }, 2000);
+        }
+      } else {
+        console.error('🗑️ 데이터 정리 실패:', result.error);
+        setError(result.error);
+      }
+    } catch (err) {
+      console.error('🗑️ 데이터 정리 오류:', err);
+      setError('데이터 정리 중 오류가 발생했습니다.');
+    } finally {
+      setIsCleaningUp(false);
     }
   }, [refreshSessions]);
 
@@ -233,6 +278,12 @@ export default function AdminPage() {
                   🗑️ 캐시 초기화
                 </button>
               )}
+              <button
+                onClick={() => setShowCleanupModal(true)}
+                className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 flex items-center gap-2"
+              >
+                🧹 데이터 정리
+              </button>
             </div>
           </div>
         </div>
@@ -390,6 +441,142 @@ export default function AdminPage() {
             </div>
           )}
         </div>
+        
+        {/* 🗑️ 데이터 정리 모달 */}
+        {showCleanupModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900">🗑️ 데이터베이스 정리</h3>
+                <button
+                  onClick={() => {
+                    setShowCleanupModal(false);
+                    setCleanupResult(null);
+                  }}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              {!cleanupResult ? (
+                <div>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <span className="text-2xl">⚠️</span>
+                      </div>
+                      <div className="ml-3">
+                        <h4 className="text-lg font-medium text-yellow-800">주의사항</h4>
+                        <div className="mt-2 text-sm text-yellow-700">
+                          <ul className="list-disc list-inside space-y-1">
+                            <li>이 작업은 오래된 데이터를 영구적으로 삭제합니다</li>
+                            <li>최신 30개 세션만 유지되고 나머지는 모두 삭제됩니다</li>
+                            <li>삭제된 데이터는 복구할 수 없습니다</li>
+                            <li>먼저 시뮬레이션으로 확인해보세요</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => handleCleanup(true, 30)}
+                      disabled={isCleaningUp}
+                      className="flex-1 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isCleaningUp ? (
+                        <>
+                          <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                          분석 중...
+                        </>
+                      ) : (
+                        <>🔍 시뮬레이션 (안전)</>
+                      )}
+                    </button>
+                    
+                    <button
+                      onClick={() => handleCleanup(false, 30)}
+                      disabled={isCleaningUp}
+                      className="flex-1 bg-red-600 text-white px-4 py-3 rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                    >
+                      {isCleaningUp ? (
+                        <>
+                          <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                          삭제 중...
+                        </>
+                      ) : (
+                        <>🗑️ 실제 삭제 (위험)</>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                    <h4 className="font-medium text-gray-900 mb-3">📊 정리 결과</h4>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-600">전체 세션:</span>
+                        <span className="ml-2 font-medium">{cleanupResult.totalSessions}개</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">유지된 세션:</span>
+                        <span className="ml-2 font-medium text-green-600">{cleanupResult.keptCount}개</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">삭제 대상:</span>
+                        <span className="ml-2 font-medium text-red-600">{cleanupResult.estimatedDeleteCount}개</span>
+                      </div>
+                      <div>
+                        <span className="text-gray-600">실행 시간:</span>
+                        <span className="ml-2 font-medium">{cleanupResult.executionTime}ms</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {cleanupResult.dryRun ? (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                      <div className="text-blue-800">
+                        <strong>🔍 시뮬레이션 완료</strong>
+                        <p className="mt-2 text-sm">실제 삭제되지 않았습니다. 위의 결과를 확인하고 실제 삭제를 진행하세요.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                      <div className="text-green-800">
+                        <strong>✅ 삭제 완료</strong>
+                        <p className="mt-2 text-sm">{cleanupResult.deletedCount}개의 세션이 성공적으로 삭제되었습니다.</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {cleanupResult.deletionLog && cleanupResult.deletionLog.length > 0 && (
+                    <div className="mt-4">
+                      <h5 className="font-medium text-gray-900 mb-2">
+                        {cleanupResult.dryRun ? '삭제 예정 목록 (미리보기)' : '삭제된 목록'}
+                      </h5>
+                      <div className="bg-gray-50 rounded-lg p-3 max-h-40 overflow-y-auto">
+                        {cleanupResult.deletionLog.slice(0, 10).map((item: any, index: number) => (
+                          <div key={index} className="text-sm text-gray-600 py-1">
+                            {index + 1}. {item.customerName} ({item.userId})
+                            {item.deletedAt && <span className="text-xs text-gray-400 ml-2">{item.deletedAt}</span>}
+                          </div>
+                        ))}
+                        {cleanupResult.deletionLog.length > 10 && (
+                          <div className="text-xs text-gray-400 mt-2">
+                            ... 외 {cleanupResult.deletionLog.length - 10}개 더
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

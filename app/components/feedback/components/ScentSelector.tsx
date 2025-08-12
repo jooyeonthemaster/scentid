@@ -11,8 +11,6 @@ interface ScentSelectorProps {
   setSelectedScent: (scent: SpecificScent | null) => void;
   scentSearchTerm: string;
   setScentSearchTerm: (term: string) => void;
-  selectedCategory: PerfumeCategory;
-  setSelectedCategory: (category: PerfumeCategory) => void;
   onAddScent: () => void;
 }
 
@@ -22,18 +20,14 @@ export const ScentSelector: React.FC<ScentSelectorProps> = ({
   setSelectedScent,
   scentSearchTerm,
   setScentSearchTerm,
-  selectedCategory,
-  setSelectedCategory,
   onAddScent
 }) => {
-  // 사용 가능한 모든 카테고리
-  const categoryOptions: PerfumeCategory[] = ['citrus', 'floral', 'woody', 'musky', 'fruity', 'spicy'];
 
   return (
     <div>
       <div className="mb-4">
         <div className="flex items-center mb-3">
-          <div className="flex-1 mr-2">
+          <div className="flex-1">
             <input
               type="text"
               placeholder="향료 이름으로 검색하세요..."
@@ -46,26 +40,10 @@ export const ScentSelector: React.FC<ScentSelectorProps> = ({
               }}
             />
           </div>
-          
-          <div>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value as PerfumeCategory)}
-              className="p-2.5 border border-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200 shadow-sm"
-              style={{ 
-                background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)'
-              }}
-            >
-              {categoryOptions.map((category) => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
         </div>
 
         <div 
-          className="max-h-60 overflow-y-auto border border-gray-300 rounded-lg shadow-lg"
+          className="max-h-96 overflow-y-auto border border-gray-300 rounded-lg shadow-lg"
           style={{ 
             background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
             boxShadow: '0 15px 30px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255, 255, 255, 0.8)'
@@ -73,10 +51,8 @@ export const ScentSelector: React.FC<ScentSelectorProps> = ({
         >
           {availableScents
             .filter(scent => 
-              (scentSearchTerm === '' || scent.name.toLowerCase().includes(scentSearchTerm.toLowerCase())) &&
-              (scent.category === selectedCategory)
+              scentSearchTerm === '' || scent.name.toLowerCase().includes(scentSearchTerm.toLowerCase())
             )
-            .slice(0, 8) // 최대 8개까지만 표시
             .map((scent) => (
               <div
                 key={scent.id}

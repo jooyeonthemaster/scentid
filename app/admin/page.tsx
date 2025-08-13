@@ -44,6 +44,7 @@ export default function AdminPage() {
   const [showCleanupModal, setShowCleanupModal] = useState(false);
   const [cleanupResult, setCleanupResult] = useState<any>(null);
   const [isCleaningUp, setIsCleaningUp] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -114,6 +115,18 @@ export default function AdminPage() {
     loadSessions(false, true);
   }, [loadSessions]);
 
+  // 자동 새로고침 (30초마다)
+  useEffect(() => {
+    if (!autoRefresh) return;
+    
+    const interval = setInterval(() => {
+      console.log('🔄 자동 새로고침 실행');
+      refreshSessions();
+    }, 30000); // 30초
+    
+    return () => clearInterval(interval);
+  }, [autoRefresh, refreshSessions]);
+
   // 캐시 초기화
   const clearCache = useCallback(async () => {
     try {
@@ -167,29 +180,51 @@ export default function AdminPage() {
     }
   }, [refreshSessions]);
 
-  // 시간 포맷팅
+  // 시간 포맷팅 (개선된 Firestore 타임스탬프 처리)
   const formatDate = (timestamp: any) => {
     if (!timestamp) return '알 수 없음';
     
     let date;
-    if (typeof timestamp === 'object' && timestamp.seconds) {
-      // Firebase Timestamp 객체
-      date = new Date(timestamp.seconds * 1000);
-    } else if (typeof timestamp === 'number') {
-      date = new Date(timestamp);
-    } else if (typeof timestamp === 'string') {
-      date = new Date(timestamp);
-    } else {
+    try {
+      // Firestore Timestamp 객체인 경우
+      if (timestamp && typeof timestamp === 'object' && timestamp.seconds) {
+        date = new Date(timestamp.seconds * 1000 + (timestamp.nanoseconds || 0) / 1000000);
+      } 
+      // Firestore toMillis() 메서드가 있는 경우
+      else if (timestamp && typeof timestamp.toMillis === 'function') {
+        date = new Date(timestamp.toMillis());
+      }
+      // 숫자인 경우 (밀리초)
+      else if (typeof timestamp === 'number') {
+        date = new Date(timestamp);
+      } 
+      // 문자열인 경우
+      else if (typeof timestamp === 'string') {
+        date = new Date(timestamp);
+      } 
+      // 그 외의 경우
+      else {
+        console.warn('알 수 없는 타임스탬프 형식:', typeof timestamp, timestamp);
+        return '알 수 없음';
+      }
+      
+      // 유효한 날짜인지 확인
+      if (isNaN(date.getTime())) {
+        console.warn('유효하지 않은 날짜:', timestamp);
+        return '알 수 없음';
+      }
+      
+      return date.toLocaleString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      console.error('날짜 포맷팅 오류:', error, timestamp);
       return '알 수 없음';
     }
-    
-    return date.toLocaleString('ko-KR', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   // 상태별 색상
@@ -256,20 +291,32 @@ export default function AdminPage() {
               <div className="text-sm text-gray-500">
                 총 {totalSessions}개 세션 (로드됨: {sessions.length}개)
               </div>
-              <button
-                onClick={refreshSessions}
-                disabled={isRefreshing}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
-              >
-                {isRefreshing ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                    새로고침 중...
-                  </>
-                ) : (
-                  <>🔄 새로고침</>
-                )}
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setAutoRefresh(!autoRefresh)}
+                  className={`px-3 py-2 rounded-lg text-sm flex items-center gap-1 ${
+                    autoRefresh 
+                      ? 'bg-green-600 text-white' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  {autoRefresh ? '🟢 자동새로고침 ON' : '⚪ 자동새로고침 OFF'}
+                </button>
+                <button
+                  onClick={refreshSessions}
+                  disabled={isRefreshing}
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isRefreshing ? (
+                    <>
+                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
+                      새로고침 중...
+                    </>
+                  ) : (
+                    <>🔄 강제새로고침</>
+                  )}
+                </button>
+              </div>
               {process.env.NODE_ENV === 'development' && (
                 <button
                   onClick={clearCache}

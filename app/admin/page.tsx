@@ -44,7 +44,7 @@ export default function AdminPage() {
   const [showCleanupModal, setShowCleanupModal] = useState(false);
   const [cleanupResult, setCleanupResult] = useState<any>(null);
   const [isCleaningUp, setIsCleaningUp] = useState(false);
-  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
 
   // 초기 데이터 로드
   useEffect(() => {
@@ -122,7 +122,7 @@ export default function AdminPage() {
     const interval = setInterval(() => {
       console.log('🔄 자동 새로고침 실행');
       refreshSessions();
-    }, 30000); // 30초
+    }, 10000); // 10초로 단축
     
     return () => clearInterval(interval);
   }, [autoRefresh, refreshSessions]);

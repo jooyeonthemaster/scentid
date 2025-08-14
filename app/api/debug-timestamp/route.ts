@@ -51,6 +51,10 @@ export async function GET() {
       sessionsAnalysis.push({
         순서: index + 1,
         userId,
+        userIdType: typeof userId,
+        userIdLength: String(userId).length,
+        isNumericUserId: /^\d+$/.test(String(userId)),
+        hasLeadingZero: String(userId).startsWith('0'),
         sessionId,
         status: data.status,
         completionStatus: getCompletionStatus(),

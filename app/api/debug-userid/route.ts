@@ -27,7 +27,7 @@ export async function GET() {
         success: false,
         message: '세션이 없습니다.'
       });
-    }
+    } 
     
     const userIdAnalysis = [];
     const userIdStats = {

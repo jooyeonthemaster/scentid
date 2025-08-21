@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAllUserData, getSessionFullData, getCachedUserSessionsList, clearSessionCache, cleanupOldSessions } from '../../../lib/firestoreApi';
+import { getAllUserData, getSessionFullData, getCachedUserSessionsList, clearSessionCache, cleanupOldSessions, getAllSessionsForDebug } from '../../../lib/firestoreApi';
 
 /**
  * 관리자용 API 엔드포인트
@@ -14,6 +14,29 @@ export async function GET(request: NextRequest) {
   try {
     console.log('관리자 API: 최적화된 사용자 데이터 조회 시작');
     
+    // Firebase 설정 검증
+    const requiredEnvVars = [
+      'NEXT_PUBLIC_FIREBASE_API_KEY',
+      'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+      'NEXT_PUBLIC_FIREBASE_APP_ID'
+    ];
+    
+    const missingVars = requiredEnvVars.filter(varName => 
+      !process.env[varName] || 
+      process.env[varName].includes('your_') ||
+      process.env[varName] === 'your_api_key_here'
+    );
+    
+    if (missingVars.length > 0) {
+      console.error('🔥 Firebase 설정 오류:', missingVars);
+      return NextResponse.json({
+        success: false,
+        error: 'Firebase 설정이 완료되지 않았습니다.',
+        details: `다음 환경 변수를 @env.txt 파일에 설정해주세요: ${missingVars.join(', ')}`,
+        missingVars: missingVars
+      }, { status: 503 });
+    }
+    
     // 쿼리 파라미터에서 페이지네이션 정보 추출
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get('limit') || '50');
@@ -23,8 +46,24 @@ export async function GET(request: NextRequest) {
     
     console.log('📊 조회 파라미터:', { limit, lastKey, forceRefresh });
     
-    // 최적화된 캐시된 함수 사용 (타입 문제 해결을 위한 캐스팅)
-    const result = await (getCachedUserSessionsList as any)(limit, lastKey, forceRefresh);
+    // 디버깅 모드인지 확인
+    const debugMode = searchParams.get('debug') === 'true';
+    
+    let result;
+    if (debugMode) {
+      // 디버깅 모드: 모든 세션 조회 (필터링 없음)
+      console.log('🔍 디버깅 모드: 모든 세션 조회');
+      const debugResult = await getAllSessionsForDebug(limit);
+      result = {
+        sessions: debugResult.sessions,
+        hasMore: false,
+        lastKey: null,
+        total: debugResult.total
+      };
+    } else {
+      // 일반 모드: 최적화된 캐시된 함수 사용
+      result = await (getCachedUserSessionsList as any)(limit, lastKey, forceRefresh);
+    }
     
     // Firebase 조회 타임아웃 에러 처리
     if (result.error) {

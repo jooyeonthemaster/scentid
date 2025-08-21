@@ -28,6 +28,7 @@ interface AdminResponse {
   lastKey: string | null;
   cached: boolean;
   error?: string;
+  missingVars?: string[];
 }
 
 export default function AdminPage() {
@@ -89,7 +90,12 @@ export default function AdminPage() {
         
         console.log(`📊 세션 로드 완료: ${data.sessions.length}개 (캐시: ${data.cached})`);
       } else {
-        setError(data.error || '데이터 로드 실패');
+        // Firebase 설정 오류인 경우 더 구체적인 메시지
+        if (data.missingVars) {
+          setError(`Firebase 설정 오류: @env.txt 파일에 다음 값들을 설정해주세요: ${data.missingVars.join(', ')}`);
+        } else {
+          setError(data.error || '데이터 로드 실패');
+        }
       }
     } catch (err) {
       setError('서버 연결 오류');
@@ -421,7 +427,7 @@ export default function AdminPage() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredSessions.map((session, index) => (
                   <motion.tr
-                    key={session.sessionId}
+                    key={`${session.userId}_${session.sessionId}_${index}`}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}

@@ -441,6 +441,9 @@ export default function AdminPage() {
                         <div className="text-sm text-gray-500">
                           {session.phoneNumber}
                         </div>
+                        <div className="text-xs text-gray-400">
+                          세션: {session.sessionId.split('_')[1]?.substring(0, 8)}...
+                        </div>
                       </div>
                     </td>
                     <td className="hidden px-6 py-4 whitespace-nowrap">

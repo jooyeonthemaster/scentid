@@ -349,7 +349,7 @@ export default function ResultPage() {
                           </div>
                           <div className="mt-4 text-right">
                             <span className="inline-block bg-white px-3 py-1 rounded-full text-xs text-gray-700 font-medium border border-gray-200">
-                              @acscent_ai
+                              @scentid_ai
                             </span>
                           </div>
                         </div>

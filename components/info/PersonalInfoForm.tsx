@@ -490,7 +490,7 @@ export default function PersonalInfoForm() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="text-center"
           >
-            <h2 className="text-xs font-bold text-gray-500 mb-1 tracking-widest uppercase">AC'SCENT IDENTITY</h2>
+            <h2 className="text-xs font-bold text-gray-500 mb-1 tracking-widest uppercase">SCENT DESTINATION</h2>
             <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">
               <span className="bg-gradient-to-r from-gray-800 to-black bg-clip-text text-transparent px-1 py-1 inline-block">
                 {step === 1 && '개인 정보'}

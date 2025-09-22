@@ -90,7 +90,7 @@ export default function ChatUI() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 환영 메시지 및 안내 메시지
-  const welcomeMessage = "안녕하세요! AC'SCENT ID에 오신 것을 환영해요! 😊 저와 함께 대화하면서 어울리는 향수를 찾아볼까요?";
+  const welcomeMessage = "안녕하세요! AC'Scent Destination에 오신 것을 환영해요! 😊 저와 함께 대화하면서 어울리는 향수를 찾아볼까요?";
   const { displayText: typedWelcome, isComplete } = useTypewriter(welcomeMessage, 40);
 
   // 채팅창이 항상 최신 메시지를 보여주도록 스크롤
@@ -182,7 +182,7 @@ export default function ChatUI() {
                 AI 조향사
               </div>
             </div>
-            <h2 className="text-xs font-bold text-gray-700 tracking-wider">AC'SCENT IDENTITY</h2>
+            <h2 className="text-xs font-bold text-gray-700 tracking-wider">AC'Scent DestinationENTITY</h2>
             <h1 className="text-xl font-black text-gray-900 tracking-tight">
               <span className="bg-yellow-300 px-1.5 py-0.5 inline-block rounded-md">
                 <span className="text-pink-500">♥</span> CHAT <span className="text-pink-500">♥</span>

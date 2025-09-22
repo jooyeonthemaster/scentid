@@ -277,7 +277,7 @@ export default function FinalPage() {
         
         {/* 푸터 */}
         <div className="mt-12 text-center text-gray-500 text-sm">
-          <p>AC&apos;SCENT IDENTITY - 나만의 향수 찾기</p>
+          <p>Scent Destination - 나만의 향수 찾기</p>
           <p className="mt-1">확인 코드: {confirmationCode}</p>
         </div>
       </div>

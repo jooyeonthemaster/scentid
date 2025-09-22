@@ -668,7 +668,7 @@ export default function FeedbackForm({ perfumeId, perfumeName, onClose, onSubmit
               ✨
             </div>
             <div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">AC'SCENT ID</h2>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">AC'Scent Destination</h2>
               <p className="text-xs text-amber-500">당신만의 맞춤 향수</p>
             </div>
           </div>

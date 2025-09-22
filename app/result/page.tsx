@@ -189,7 +189,7 @@ export default function ResultPage() {
           <div className="text-center">
             <h1 className="text-2xl font-bold text-center mb-1">
               <span className="bg-gradient-to-r from-gray-800 to-black bg-clip-text text-transparent px-3 py-1 inline-block">
-                AC'SCENT IDENTITY
+                SCENT DESTINATION
               </span>
             </h1>
             <p className="text-gray-700 text-sm">당신만의 향이 완성되었습니다</p>
@@ -349,7 +349,7 @@ export default function ResultPage() {
                           </div>
                           <div className="mt-4 text-right">
                             <span className="inline-block bg-white px-3 py-1 rounded-full text-xs text-gray-700 font-medium border border-gray-200">
-                              @scentid_ai
+                              @scentdestination
                             </span>
                           </div>
                         </div>

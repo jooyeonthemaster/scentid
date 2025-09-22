@@ -118,7 +118,7 @@ export default function FeedbackForm({
               ✨
             </div>
             <div>
-              <h2 className="text-lg lg:text-xl font-bold text-gray-800">AC'SCENT ID</h2>
+              <h2 className="text-lg lg:text-xl font-bold text-gray-800">AC'Scent Destination</h2>
               <p className="text-xs text-gray-500">당신만의 맞춤 향수</p>
             </div>
           </div>

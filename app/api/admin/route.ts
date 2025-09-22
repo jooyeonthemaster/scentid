@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllUserData, getSessionFullData, getCachedUserSessionsList, clearSessionCache, cleanupOldSessions, getAllSessionsForDebug } from '../../../lib/firestoreApi';
+import { getCachedAdminUserSessionsList, getAdminSessionFullData, clearAdminSessionCache } from '../../../lib/firestoreAdminApi';
 
 /**
  * 관리자용 API 엔드포인트
@@ -61,8 +62,14 @@ export async function GET(request: NextRequest) {
         total: debugResult.total
       };
     } else {
-      // 일반 모드: 최적화된 캐시된 함수 사용
-      result = await (getCachedUserSessionsList as any)(limit, lastKey, forceRefresh);
+      // 일반 모드: Admin SDK 사용 (서버사이드에서 권한 문제 해결)
+      try {
+        result = await getCachedAdminUserSessionsList(limit, lastKey, forceRefresh);
+      } catch (adminError) {
+        console.warn('Admin SDK 실패, 클라이언트 SDK로 폴백:', adminError);
+        // Admin SDK 실패시 기존 클라이언트 SDK 사용
+        result = await (getCachedUserSessionsList as any)(limit, lastKey, forceRefresh);
+      }
     }
     
     // Firebase 조회 타임아웃 에러 처리
@@ -128,6 +135,7 @@ export async function GET(request: NextRequest) {
 export async function DELETE() {
   try {
     clearSessionCache();
+    clearAdminSessionCache(); // Admin SDK 캐시도 초기화
     
     return NextResponse.json({
       success: true,
@@ -174,7 +182,14 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
     
-    const sessionData = await getSessionFullData(userId, sessionId);
+    // Admin SDK로 세션 상세 조회 시도
+    let sessionData;
+    try {
+      sessionData = await getAdminSessionFullData(userId, sessionId);
+    } catch (adminError) {
+      console.warn('Admin SDK로 세션 조회 실패, 클라이언트 SDK로 폴백:', adminError);
+      sessionData = await getSessionFullData(userId, sessionId);
+    }
     
     // 비밀번호 포맷팅
     const formatPassword = (password: string): string => {

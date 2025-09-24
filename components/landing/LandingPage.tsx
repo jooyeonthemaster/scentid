@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 
 export default function LandingPage() {
@@ -35,30 +34,17 @@ export default function LandingPage() {
       >
 
         
-        {/* 상단 로고 및 제목 영역 */}
+        {/* 상단 제목 영역 (로고 제거) */}
         <div className="flex flex-col items-center mb-6">
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="w-20 h-20 mb-4 relative"
-          >
-            <img 
-              src="/logo.png" 
-              alt="AC'SCENT Logo" 
-              className="w-full h-full object-contain"
-            />
-          </motion.div>
-          
           <motion.div
             initial={{ y: -10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
             className="text-center"
           >
-            <h2 className="text-xs font-bold text-gray-500 mb-1 tracking-widest uppercase">AC'Scent DestinationENTITY</h2>
+            <h2 className="text-xs font-bold text-gray-500 mb-1 tracking-widest uppercase">Scent Destination</h2>
             <h1 className="text-3xl font-black text-gray-900 mb-2 tracking-tight">
-              <span className="bg-gradient-to-r from-gray-800 to-black bg-clip-text text-transparent px-1 py-1 inline-block">AC'Scent Destination</span>
+              <span className="bg-gradient-to-r from-gray-800 to-black bg-clip-text text-transparent px-1 py-1 inline-block">Scent Destination</span>
             </h1>
           </motion.div>
           

@@ -98,8 +98,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
     
-    // 분석 결과를 바탕으로 향수 매칭 (상위 1개만)
-    const matchingPerfumes = findMatchingPerfumes(analysisResult, 1, {
+    // 분석 결과를 바탕으로 향수 매칭 (상위 N개, 다양성 옵션 적용)
+    const matchingPerfumes = findMatchingPerfumes(analysisResult, 3, {
       // 중요 특성에 더 높은 가중치 부여
       weights: { 
         cute: 2.0,    // 귀여움 가중치 2배 증가 (가장 중요)
@@ -114,7 +114,15 @@ export async function POST(request: NextRequest) {
         purity: 3.0   // 순수함 차이 3점 이상이면 패널티
       },
       // 하이브리드 접근법 사용 (코사인 유사도 + 유클리드 거리)
-      useHybrid: true
+      useHybrid: true,
+      // 다양성 옵션 (MMR + 카테고리 분산)
+      diversify: {
+        enabled: true,
+        lambda: 0.7,         // 유사도 70%, 다양성 30%
+        topK: 12,            // 상위 12개 후보 풀에서 재랭킹
+        maxPerCategory: 1,   // 동일 카테고리 최대 1개
+        categoryPenalty: 0.1 // 동일 카테고리 중복 패널티
+      }
     });
     
     // matchingPerfumes 유효성 확인

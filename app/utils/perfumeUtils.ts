@@ -44,12 +44,19 @@ export function getCategoryKoreanName(category: PerfumeCategory): string {
  * @returns 매칭된 향수 목록
  */
 export function findMatchingPerfumes(
-  analysisResult: ImageAnalysisResult, 
+  analysisResult: ImageAnalysisResult,
   topN: number = 3,
   options: {
     weights?: Partial<Record<keyof TraitScores, number>>;
     thresholds?: Partial<Record<keyof TraitScores, number>>;
     useHybrid?: boolean;
+    diversify?: {
+      enabled?: boolean;          // 다양성 적용 여부
+      lambda?: number;            // MMR 람다 (0~1) – 1에 가까울수록 유사도 우선
+      topK?: number;              // 재랭킹 후보 풀 크기
+      maxPerCategory?: number;    // 카테고리별 최대 개수 (소프트 제약으로도 동작)
+      categoryPenalty?: number;   // 동일 카테고리 중복 시 패널티 가중치
+    };
   } = {}
 ) {
   if (!analysisResult || !analysisResult.traits) {
@@ -72,7 +79,14 @@ export function findMatchingPerfumes(
       charisma: 3.0 // 카리스마 차이 3점 이상이면 패널티
     },
     // 하이브리드 접근법 사용 여부
-    useHybrid = true
+    useHybrid = true,
+    diversify = {
+      enabled: false,
+      lambda: 0.7,
+      topK: Math.max(10, topN * 3),
+      maxPerCategory: 1,
+      categoryPenalty: 0.08,
+    }
   } = options;
 
   try {
@@ -122,22 +136,101 @@ export function findMatchingPerfumes(
         subScent2: actualPerfume?.subScent2 || null
       };
 
+      // 주요 카테고리 산출 (동일 카테고리 과다 노출 방지용)
+      const mainCategory = (() => {
+        const entries = Object.entries(persona.categories || {});
+        if (entries.length === 0) return 'unknown';
+        return entries.sort(([, a], [, b]) => (b as number) - (a as number))[0][0];
+      })() as string;
+
       return {
         perfumeId: persona.id,
         persona: enhancedPersona, // 향수 정보가 보강된 persona 객체
         score: similarity,
-        matchReason: generateMatchReason(analysisResult, enhancedPersona, actualPerfume)
+        matchReason: generateMatchReason(analysisResult, enhancedPersona, actualPerfume),
+        __meta: { mainCategory }
       };
     });
 
-    // 유사도 점수가 높은 순으로 정렬
-    const sortedResults = matchResults
-      .sort((a, b) => b.score - a.score)
-      .slice(0, topN);
+    // 유사도 점수가 높은 순으로 1차 정렬
+    const baseSorted = matchResults.sort((a, b) => b.score - a.score);
+
+    // 다양성 재랭킹 (MMR + 카테고리 패널티)
+    let sortedResults = baseSorted.slice(0, topN);
+
+    if (diversify?.enabled && topN > 1) {
+      const lambda = Math.max(0, Math.min(1, diversify.lambda ?? 0.7));
+      const poolSize = diversify.topK ?? Math.max(10, topN * 3);
+      const maxPerCategory = diversify.maxPerCategory ?? 1;
+      const categoryPenalty = diversify.categoryPenalty ?? 0.08;
+
+      const pool = baseSorted.slice(0, Math.min(poolSize, baseSorted.length));
+      const selected: typeof matchResults = [];
+      const categoryCount: Record<string, number> = {};
+
+      // 1) 최고 점수 하나 선 선택
+      if (pool.length > 0) {
+        const first = pool[0];
+        selected.push(first);
+        const cat = (first.__meta?.mainCategory as string) || 'unknown';
+        categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+      }
+
+      // 2) 나머지 MMR로 선택
+      while (selected.length < topN) {
+        let bestIdx = -1;
+        let bestScore = -Infinity;
+
+        for (let i = 1; i < pool.length; i++) {
+          const cand = pool[i];
+          if (!cand) continue;
+          if (selected.includes(cand)) continue;
+
+          // max 유사도(선택된 것들과의) 계산 – 특성 기반 하이브리드 유사도 재활용
+          let maxSimToSelected = 0;
+          for (const s of selected) {
+            const sim = calculateHybridSimilarity(
+              cand.persona!.traits,
+              s.persona!.traits
+            );
+            if (sim > maxSimToSelected) maxSimToSelected = sim;
+          }
+
+          // 카테고리 패널티 (동일 카테고리 많이 뽑히는 것 방지)
+          const cat = (cand.__meta?.mainCategory as string) || 'unknown';
+          const catCount = categoryCount[cat] || 0;
+
+          // 하드 제약: 최대 개수 초과 시 스킵
+          if (maxPerCategory > 0 && catCount >= maxPerCategory) {
+            continue;
+          }
+
+          // MMR 점수: lambda * 개별 유사도 - (1 - lambda) * 중복도 - 카테고리 패널티
+          const mmrScore = (lambda * cand.score) - ((1 - lambda) * maxSimToSelected) - (categoryPenalty * catCount);
+
+          if (mmrScore > bestScore) {
+            bestScore = mmrScore;
+            bestIdx = i;
+          }
+        }
+
+        if (bestIdx === -1) break; // 더 이상 선택할 후보 없음
+
+        const chosen = pool[bestIdx];
+        selected.push(chosen);
+        const cat = (chosen.__meta?.mainCategory as string) || 'unknown';
+        categoryCount[cat] = (categoryCount[cat] || 0) + 1;
+      }
+
+      sortedResults = selected.slice(0, topN);
+    } else {
+      sortedResults = baseSorted.slice(0, topN);
+    }
 
     console.log(`향수 매칭 완료: ${sortedResults.length}개 결과 반환, 최고 점수: ${sortedResults[0]?.score.toFixed(2)}`);
     
-    return sortedResults;
+    // 메타 정보 제거하여 반환
+    return sortedResults.map(({ __meta, ...rest }) => rest);
   } catch (error) {
     console.error('향수 매칭 오류:', error);
     return [];

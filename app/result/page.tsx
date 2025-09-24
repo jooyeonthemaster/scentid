@@ -1079,7 +1079,7 @@ export default function ResultPage() {
               <div className="flex flex-col gap-3 mt-8 pt-4 border-t border-gray-200">
                 <button
                   onClick={handleFeedback}
-                  className="px-4 py-2.5 bg-gradient-to-r from-gray-800 to-black text-white rounded-full font-bold text-sm shadow-sm hover:from-gray-700 hover:to-gray-900"
+                  className="hidden px-4 py-2.5 bg-gradient-to-r from-gray-800 to-black text-white rounded-full font-bold text-sm shadow-sm hover:from-gray-700 hover:to-gray-900"
                 >
                   피드백 남기기
                 </button>
